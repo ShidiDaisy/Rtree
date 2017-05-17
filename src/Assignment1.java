@@ -79,20 +79,31 @@ public class Assignment1 {
 		}
 			
 		//Split Leaf Node
-		public static void Split(Node leafnode){
+		public static ArrayList<Node> SplitLeaf(Node leafnode){
 			
-			ArrayList<Point> sortedPoint= leafnode.points;
-			
+			// initiate the smallest perimeter to be a negative integer
 			float smallestPerimeter=-1;
+			// initiate the best split Set S1 and S2
+			ArrayList<Point> bestS1=new ArrayList<Point>();
+			ArrayList<Point> bestS2=new ArrayList<Point>();
+			//initiate two new nodes
+			Node newLeafNode1 = new Node();
+			Node newLeafNode2 = new Node();
+			newLeafNode1.asLeaf=true;
+			newLeafNode2.asLeaf=true;
+			//initiate final split two nodes list
+			ArrayList<Node> twoNodesResult= new ArrayList<Node>();
 			
 			//******************//duplicate the following to sort y
-			//sort the points by X values
-			Collections.sort(sortedPoint, new Comparator<Point>(){
+			//sort the points by X values	
+			ArrayList<Point> sortedXPoint= leafnode.points;
+			Collections.sort(sortedXPoint, new Comparator<Point>(){
 				public int compare(Point p1, Point p2){
 					int result =Float.compare(p1.getX(), p2.getX());
 					return result;
 				}
 			});
+			
 			//calculate the perimeter sum of MBR(S1) and MBR(S2); 
 			//record it if this is the best split so far
 			for(int i=zeropoint4B;i<=B-zeropoint4B+1;i++){
@@ -100,10 +111,10 @@ public class Assignment1 {
 				ArrayList<Point> S2=new ArrayList<Point>();
 				
 				for(int j=0;j<i;j++){
-					S1.add(sortedPoint.get(j));
+					S1.add(sortedXPoint.get(j));
 				}
 				for(int j=i;j<(B+1);j++){
-					S2.add(sortedPoint.get(j));
+					S2.add(sortedXPoint.get(j));
 				}
 				
 				//store the first point's Y in S1 to be the smallest/largest y value at first
@@ -119,7 +130,7 @@ public class Assignment1 {
 					}
 				}
 				
-				//store the first point's Y in S2
+				//store the first point's Y in S2 to be the smallest/largest y value at first
 				float minYS2=S2.get(0).getY();
 				float maxYS2=S2.get(0).getY();
 				//find smallest perimeter, since x is sorted, find min and max y for S1 & S2.
@@ -132,20 +143,91 @@ public class Assignment1 {
 					}
 				}	
 				
-				float perimeterS1=(S1.get(S1.size()-1).getX()-S1.get(0).getX())*2+(maxYS1-minYS1)*2;
-				float perimeterS2=(S2.get(S2.size()-1).getX()-S2.get(0).getX())*2+(maxYS2-minYS2)*2;
-				float totalPerimeter=perimeterS1+perimeterS2;
+				float perimeterS1X=(S1.get(S1.size()-1).getX()-S1.get(0).getX())*2+(maxYS1-minYS1)*2;
+				float perimeterS2X=(S2.get(S2.size()-1).getX()-S2.get(0).getX())*2+(maxYS2-minYS2)*2;
+				float totalPerimeterX=perimeterS1X+perimeterS2X;
 				
 				if(smallestPerimeter==-1){ 				//no need to add
-					smallestPerimeter=totalPerimeter;	//these lines
-				}else{									//for y
-					if(totalPerimeter<=smallestPerimeter){
-						smallestPerimeter=totalPerimeter;
+					smallestPerimeter=totalPerimeterX;  //these lines
+					bestS1=S1;							//for
+					bestS2=S2;							//Y
+				}else{									
+					if(totalPerimeterX<=smallestPerimeter){
+						smallestPerimeter=totalPerimeterX;
+						bestS1=S1;
+						bestS2=S2;
 					}
 				}
 					
 			}
 			
+			
+
+			//sort the points by Y values
+			ArrayList<Point> sortedYPoint= leafnode.points;
+			Collections.sort(sortedYPoint, new Comparator<Point>(){
+				public int compare(Point p1, Point p2){
+					int result =Float.compare(p1.getY(), p2.getY());
+					return result;
+				}
+			});
+			//calculate the perimeter sum of MBR(S1) and MBR(S2); 
+			//record it if this is the best split so far
+			for(int i=zeropoint4B;i<=B-zeropoint4B+1;i++){
+				ArrayList<Point> S1Y=new ArrayList<Point>();
+				ArrayList<Point> S2Y=new ArrayList<Point>();
+				
+				for(int j=0;j<i;j++){
+					S1Y.add(sortedYPoint.get(j));
+				}
+				for(int j=i;j<(B+1);j++){
+					S2Y.add(sortedYPoint.get(j));
+				}
+				
+				//store the first point's X in S1 to be the smallest/largest x value at first
+				float minXS1=S1Y.get(0).getX();
+				float maxXS1=S1Y.get(0).getX();
+				//find smallest perimeter, since Y is sorted, find min and max x for S1 & S2.
+				for (int j=0;j<S1Y.size();j++){
+					if(S1Y.get(j).getX()<=minXS1){
+						minXS1=S1Y.get(j).getX();
+					}
+					if(S1Y.get(j).getX()>=maxXS1){
+						maxXS1=S1Y.get(j).getX();
+					}
+				}
+				
+				//store the first point's X in S2 to be the smallest/largest X value at first
+				float minXS2=S2Y.get(0).getX();
+				float maxXS2=S2Y.get(0).getX();
+				//find smallest perimeter, since Y is sorted, find min and max X for S1 & S2.
+				for (int j=0;j<S2Y.size();j++){
+					if(S2Y.get(j).getX()<=minXS2){
+						minXS2=S2Y.get(j).getX();
+					}
+					if(S2Y.get(j).getX()>=maxXS2){
+						maxXS2=S2Y.get(j).getX();
+					}
+				}	
+				
+				float perimeterS1Y=(S1Y.get(S1Y.size()-1).getY()-S1Y.get(0).getY())*2+(maxXS1-minXS1)*2;
+				float perimeterS2Y=(S2Y.get(S2Y.size()-1).getX()-S2Y.get(0).getX())*2+(maxXS2-minXS2)*2;
+				float totalPerimeterY=perimeterS1Y+perimeterS2Y;
+				
+				if(totalPerimeterY<=smallestPerimeter){
+						smallestPerimeter=totalPerimeterY;
+						bestS1=S1Y;
+						bestS2=S2Y;
+				}
+				
+					
+			}
+			
+			newLeafNode1.points=bestS1;
+			newLeafNode2.points=bestS2;
+			twoNodesResult.add(newLeafNode1);
+			twoNodesResult.add(newLeafNode2);		
+			return twoNodesResult;
 		}
 		
 		//Handle overflow
