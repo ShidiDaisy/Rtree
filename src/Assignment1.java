@@ -7,275 +7,276 @@ import java.math.*;
 public class Assignment1 {
 
 	private final static int B = 5;
-	private final static int zeropoint4B = (int) Math.ceil(0.4 * B);
+	private final static int zeropoint4B=(int) Math.ceil(0.4*B); 
 	static ArrayList<Node> nodeList = new ArrayList<Node>();
-
+	
 	public static void main(String[] args) {
-		System.out.println("0.4B = " + zeropoint4B);
-		// A list containing all nodes number
-		// nodeList=new ArrayList<Node>();
-		int nodeNum = 0;
-		// build a R-tree
-		Point point1 = new Point(0, 5, 1);
-		Point point2 = new Point(5, 2, 2);
+		System.out.println("0.4B = "+zeropoint4B);
+		//A list containing all nodes number	
+	    //nodeList=new ArrayList<Node>();
+		int nodeNum=0;
+		//build a R-tree
+		Point point1 = new Point(0,5,1);
+		Point point2 = new Point(5,2,2);
 		Node node1 = new Node();
-		nodeNum = nodeNum + 1;
-		// nodeList.add(node1);
-		node1.asLeaf = true;
-		Insertion(node1, point1);
-		System.out.println(node1.x1 + " " + node1.y1 + " " + node1.x2 + " "
-				+ node1.y2 + " size: " + node1.points.size());
+		nodeNum=nodeNum+1;
+	//	nodeList.add(node1);
+		node1.asLeaf=true;
+		Insertion(node1,point1);
+		System.out.println(node1.x1+" "+node1.y1+" "+node1.x2+" "+node1.y2+" size: "+node1.points.size());
 		node1.getAllId();
-		Insertion(node1, point2);
-		System.out.println(node1.x1 + " " + node1.y1 + " " + node1.x2 + " "
-				+ node1.y2 + " size: " + node1.points.size());
+		Insertion(node1,point2);
+		System.out.println(node1.x1+" "+node1.y1+" "+node1.x2+" "+node1.y2+" size: "+node1.points.size());
 		node1.getAllId();
 	}
-
-	// Find the root
-
-	// Insertion
-	public static void Insertion(Node root, Point point) {
-
-		if (root.getLeaf() == true) {
-			// add point to root
-			root.addPoint2Node(point);
-			// check if the node overflows
-			if (root.points.size() > B) {
-				// handle overflow
-				// split first
-			}
-
-			// update leaf size
-			// if this is the first point
-			if (root.points.size() == 1) {
-				root.x1 = point.x;
-				root.x2 = point.x;
-				root.y1 = point.y;
-				root.y2 = point.y;
-			} else {
-				for (int i = 0; i < root.points.size(); i++) {
-					if (root.points.get(i).x <= root.x1) {
-						root.x1 = root.points.get(i).x;
+	
+		//Find the root
+		
+		//Insertion
+		public static void Insertion(Node root, Point point){
+			
+			if(root.getLeaf() == true){
+				//add point to root
+				root.addPoint2Node(point);
+				//check if the node overflows
+				if(root.points.size()>B){
+					//handle overflow
+					//split first
+				}
+					
+				//update leaf size
+				//if this is the first point
+				if(root.points.size() == 1){
+					root.x1 = point.x;
+					root.x2 = point.x;
+					root.y1 = point.y;
+					root.y2 = point.y;
+				}
+				else{
+					for(int i=0; i<root.points.size(); i++){
+						if(root.points.get(i).x<=root.x1){
+							root.x1=root.points.get(i).x;
+						}
+						if(root.points.get(i).x>=root.x2){
+							root.x2=root.points.get(i).x;
+						}
+						if(root.points.get(i).y>=root.y1){
+							root.y1=root.points.get(i).y;
+						}
+						if(root.points.get(i).y<=root.y2){
+							root.y2=root.points.get(i).y;
+						}
 					}
-					if (root.points.get(i).x >= root.x2) {
-						root.x2 = root.points.get(i).x;
+				}
+					//handle overflow function
+				
+				
+			}else
+			//internal node
+			{
+				//Choose subtree
+			}
+		}
+			
+		//Split Leaf Node
+		public static void Split(Node leafnode){
+			
+			ArrayList<Point> sortedPoint= leafnode.points;
+			
+			float smallestPerimeter=-1;
+			
+			//******************//duplicate the following to sort y
+			//sort the points by X values
+			Collections.sort(sortedPoint, new Comparator<Point>(){
+				public int compare(Point p1, Point p2){
+					int result =Float.compare(p1.getX(), p2.getX());
+					return result;
+				}
+			});
+			//calculate the perimeter sum of MBR(S1) and MBR(S2); 
+			//record it if this is the best split so far
+			for(int i=zeropoint4B;i<=B-zeropoint4B+1;i++){
+				ArrayList<Point> S1=new ArrayList<Point>();
+				ArrayList<Point> S2=new ArrayList<Point>();
+				
+				for(int j=0;j<i;j++){
+					S1.add(sortedPoint.get(j));
+				}
+				for(int j=i;j<(B+1);j++){
+					S2.add(sortedPoint.get(j));
+				}
+				
+				//store the first point's Y in S1 to be the smallest/largest y value at first
+				float minYS1=S1.get(0).getY();
+				float maxYS1=S1.get(0).getY();
+				//find smallest perimeter, since x is sorted, find min and max y for S1 & S2.
+				for (int j=0;j<S1.size();j++){
+					if(S1.get(j).getY()<=minYS1){
+						minYS1=S1.get(j).getY();
 					}
-					if (root.points.get(i).y >= root.y1) {
-						root.y1 = root.points.get(i).y;
-					}
-					if (root.points.get(i).y <= root.y2) {
-						root.y2 = root.points.get(i).y;
+					if(S1.get(j).getY()>=maxYS1){
+						maxYS1=S1.get(j).getY();
 					}
 				}
+				
+				//store the first point's Y in S2
+				float minYS2=S2.get(0).getY();
+				float maxYS2=S2.get(0).getY();
+				//find smallest perimeter, since x is sorted, find min and max y for S1 & S2.
+				for (int j=0;j<S2.size();j++){
+					if(S2.get(j).getY()<=minYS2){
+						minYS2=S2.get(j).getY();
+					}
+					if(S2.get(j).getY()>=maxYS2){
+						maxYS2=S2.get(j).getY();
+					}
+				}	
+				
+				float perimeterS1=(S1.get(S1.size()-1).getX()-S1.get(0).getX())*2+(maxYS1-minYS1)*2;
+				float perimeterS2=(S2.get(S2.size()-1).getX()-S2.get(0).getX())*2+(maxYS2-minYS2)*2;
+				float totalPerimeter=perimeterS1+perimeterS2;
+				
+				if(smallestPerimeter==-1){ 				//no need to add
+					smallestPerimeter=totalPerimeter;	//these lines
+				}else{									//for y
+					if(totalPerimeter<=smallestPerimeter){
+						smallestPerimeter=totalPerimeter;
+					}
+				}
+					
 			}
-			// handle overflow function
+			
+		}
+		
+		//Handle overflow
+		public static void HandleOverflow(){
+			//Split
+		}
+		
+		
+		
+		//rectangle
+		public static class Node{
+			private float x1;
+			private float y1;
+			private float x2;
+			private float y2;
+			boolean asLeaf;
+			
+			ArrayList<Point> points = new ArrayList<Point>();
+			
+			public void getAllId(){
+				for(int i=0;i<this.points.size();i++){
+					System.out.println(this.points.get(i).getId());
+				}
+			}
+			
+			//the nodes in this node
+			ArrayList<Node> childNodes = new ArrayList<Node>();
+			
+			public Node(){}
+			
+			public Node(float x1, float y1, float x2, float y2, boolean asLeaf){
+				this.x1 = x1;
+				this.y1 = y1;
+				this.x2 = x2;
+				this.y2 = y2;
+				this.asLeaf = asLeaf;
+			}
+			
+			public void setX1(float x1){
+				this.x1 = x1;
+			}
+			
+			public float getX1(){
+				return x1;
+			}
+			
+			public void setY1(float y1){
+				this.y1 = y1;
+			}
+			
+			public float getY1(){
+				return y1;
+			}
+			
+			public void setX2(float x2){
+				this.x2 = x2;
+			}
+			
+			public float getX2(){
+				return x2;
+			}
+			
+			public void setY2(float y2){
+				this.y2 = y2;
+			}
+			
+			public float getY2(){
+				return y2;
+			}
+			
+			public void setLeaf(boolean asLeaf){
+				this.asLeaf = asLeaf;
+			}
+			
+			public boolean getLeaf(){
+				return asLeaf;
+			}
+			
+			//add point to node (for leaf node)
+			public void addPoint2Node(Point point){
+				points.add(point);
+			} 
+			
+			//add child to node (for normal node)
+			public void addNode2Node(Node node){
+				childNodes.add(node);
+			} 
+			
+			
+		}
 
-		} else
-		// internal node
-		{
-			// Choose subtree
+
+		
+		public static class Point{
+			private float x;
+			private float y;
+			private int id;
+			
+			public Point(){}
+			
+			public Point(float x, float y, int id){
+				this.x = x;
+				this.y = y;
+				this.id = id;
+			}
+			
+			public void setX(float x){
+				this.x = x;
+			}
+			
+			public float getX(){
+				return x;
+			}
+			
+			public void setY(float y){
+				this.y = y;
+			}
+			
+			public float getY(){
+				return y;
+			}
+			
+			public void setId(int id){
+				this.id = id;
+			}
+			
+			public float getId(){
+				return id;
+			}
+			
+			
 		}
 	}
 
-	// Split Leaf Node
-	public static void Split(Node leafnode) {
-
-		ArrayList<Point> sortedPoint = leafnode.points;
-
-		float smallestPerimeter = -1;
-
-		// ******************//duplicate the following the sort y
-		// sort the points by X values
-		Collections.sort(sortedPoint, new Comparator<Point>() {
-			public int compare(Point p1, Point p2) {
-				int result = Float.compare(p1.getX(), p2.getX());
-				return result;
-			}
-		});
-		// calculate the perimeter sum of MBR(S1) and MBR(S2);
-		// record it if this is the best split so far
-		for (int i = zeropoint4B; i <= B - zeropoint4B + 1; i++) {
-			ArrayList<Point> S1 = new ArrayList<Point>();
-			ArrayList<Point> S2 = new ArrayList<Point>();
-
-			for (int j = 0; j < i; j++) {
-				S1.add(sortedPoint.get(j));
-			}
-			for (int j = i; j < (B + 1); j++) {
-				S2.add(sortedPoint.get(j));
-			}
-
-			// store the first point's Y in S1
-			float minYS1 = S1.get(0).getY();
-			float maxYS1 = S1.get(0).getY();
-			// find smallest perimeter, since x is sorted, find min and max y
-			// for S1 & S2.
-			for (int j = 0; j < S1.size(); j++) {
-				if (S1.get(j).getY() <= minYS1) {
-					minYS1 = S1.get(j).getY();
-				}
-				if (S1.get(j).getY() >= maxYS1) {
-					maxYS1 = S1.get(j).getY();
-				}
-			}
-
-			// store the first point's Y in S2
-			float minYS2 = S2.get(0).getY();
-			float maxYS2 = S2.get(0).getY();
-			// find smallest perimeter, since x is sorted, find min and max y
-			// for S1 & S2.
-			for (int j = 0; j < S2.size(); j++) {
-				if (S2.get(j).getY() <= minYS2) {
-					minYS2 = S2.get(j).getY();
-				}
-				if (S2.get(j).getY() >= maxYS2) {
-					maxYS2 = S2.get(j).getY();
-				}
-			}
-
-			float perimeterS1 = (S1.get(S1.size() - 1).getX() - S1.get(0)
-					.getX()) * 2 + (maxYS1 - minYS1) * 2;
-			float perimeterS2 = (S2.get(S2.size() - 1).getX() - S2.get(0)
-					.getX()) * 2 + (maxYS2 - minYS2) * 2;
-			float totalPerimeter = perimeterS1 + perimeterS2;
-
-			if (smallestPerimeter == -1) { // no need to add
-				smallestPerimeter = totalPerimeter; // these lines
-			} else { // for y
-				if (totalPerimeter <= smallestPerimeter) {
-					smallestPerimeter = totalPerimeter;
-				}
-			}
-
-		}
-
-	}
-
-	// Handle overflow
-	public static void HandleOverflow() {
-		// Split
-	}
-
-	// rectangle
-	public static class Node {
-		private float x1;
-		private float y1;
-		private float x2;
-		private float y2;
-		boolean asLeaf;
-
-		ArrayList<Point> points = new ArrayList<Point>();
-
-		public void getAllId() {
-			for (int i = 0; i < this.points.size(); i++) {
-				System.out.println(this.points.get(i).getId());
-			}
-		}
-
-		// the nodes in this node
-		ArrayList<Node> childNodes = new ArrayList<Node>();
-
-		public Node() {
-		}
-
-		public Node(float x1, float y1, float x2, float y2, boolean asLeaf) {
-			this.x1 = x1;
-			this.y1 = y1;
-			this.x2 = x2;
-			this.y2 = y2;
-			this.asLeaf = asLeaf;
-		}
-
-		public void setX1(float x1) {
-			this.x1 = x1;
-		}
-
-		public float getX1() {
-			return x1;
-		}
-
-		public void setY1(float y1) {
-			this.y1 = y1;
-		}
-
-		public float getY1() {
-			return y1;
-		}
-
-		public void setX2(float x2) {
-			this.x2 = x2;
-		}
-
-		public float getX2() {
-			return x2;
-		}
-
-		public void setY2(float y2) {
-			this.y2 = y2;
-		}
-
-		public float getY2() {
-			return y2;
-		}
-
-		public void setLeaf(boolean asLeaf) {
-			this.asLeaf = asLeaf;
-		}
-
-		public boolean getLeaf() {
-			return asLeaf;
-		}
-
-		// add point to node (for leaf node)
-		public void addPoint2Node(Point point) {
-			points.add(point);
-		}
-
-		// add child to node (for normal node)
-		public void addNode2Node(Node node) {
-			childNodes.add(node);
-		}
-
-	}
-
-	public static class Point {
-		private float x;
-		private float y;
-		private int id;
-
-		public Point() {
-		}
-
-		public Point(float x, float y, int id) {
-			this.x = x;
-			this.y = y;
-			this.id = id;
-		}
-
-		public void setX(float x) {
-			this.x = x;
-		}
-
-		public float getX() {
-			return x;
-		}
-
-		public void setY(float y) {
-			this.y = y;
-		}
-
-		public float getY() {
-			return y;
-		}
-
-		public void setId(int id) {
-			this.id = id;
-		}
-
-		public float getId() {
-			return id;
-		}
-
-	}
-}
