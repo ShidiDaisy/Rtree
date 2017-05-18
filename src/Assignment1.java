@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -14,6 +15,7 @@ public class Assignment1 {
 	//static ArrayList<Node> allNodes=new ArrayList<Node>();
 	
 	static HashMap<Integer,Node> allNodes = new HashMap<>();
+	static HashMap<Integer,Integer> allNodesParentID = new HashMap<>();
 	static int ID=1;
 	
 	public static void main(String[] args) {
@@ -25,33 +27,47 @@ public class Assignment1 {
 
 		//build an R-tree
 		Point point1 = new Point(0,5,1);
-//		Point point2 = new Point(5,2,2);
-//		Point point3 = new Point(1,4,3);
-//		Point point4 = new Point(6,1,4);
-//		Point point5 = new Point(-1,3,5);
-//		Point point6 = new Point(8,-1,6);
-		Node node1 = new Node(0, null,null,true,ID);
+		Point point2 = new Point(5,2,2);
+		Point point3 = new Point(1,4,3);
+		Point point4 = new Point(6,1,4);
+		Point point5 = new Point(-1,3,5);
+		Point point6 = new Point(8,-1,6);
+//		Node node1= new Node();
+		Node node1 = new Node(0, new ArrayList<Node>(),new ArrayList<Point>(),true,ID);
 		allNodes.put(ID,node1);
+		allNodesParentID.put(ID, 0);
 		ID=ID+1;
 		
 //		nodeNum=nodeNum+1;
 		Insertion(node1,point1);
 		System.out.println(node1.x1+" "+node1.y1+" "+node1.x2+" "+node1.y2+" size: "+node1.points.size());
 
-//		Insertion(node1,point2);
-//		System.out.println(node1.x1+" "+node1.y1+" "+node1.x2+" "+node1.y2+" size: "+node1.points.size());
-//		Insertion(node1,point3);
-//		System.out.println(node1.x1+" "+node1.y1+" "+node1.x2+" "+node1.y2+" size: "+node1.points.size());
-//		Insertion(node1,point4);
-//		System.out.println(node1.x1+" "+node1.y1+" "+node1.x2+" "+node1.y2+" size: "+node1.points.size());
-//		Insertion(node1,point5);
-//		System.out.println(node1.x1+" "+node1.y1+" "+node1.x2+" "+node1.y2+" size: "+node1.points.size());;
-//		Insertion(node1,point6);
-//		System.out.println(node1.x1+" "+node1.y1+" "+node1.x2+" "+node1.y2+" size: "+node1.points.size());
+		Insertion(node1,point2);
+		System.out.println(node1.x1+" "+node1.y1+" "+node1.x2+" "+node1.y2+" size: "+node1.points.size());
+		Insertion(node1,point3);
+		System.out.println(node1.x1+" "+node1.y1+" "+node1.x2+" "+node1.y2+" size: "+node1.points.size());
+		Insertion(node1,point4);
+		System.out.println(node1.x1+" "+node1.y1+" "+node1.x2+" "+node1.y2+" size: "+node1.points.size());
+		Insertion(node1,point5);
+		System.out.println(node1.x1+" "+node1.y1+" "+node1.x2+" "+node1.y2+" size: "+node1.points.size());;
+		Insertion(node1,point6);
+		System.out.println(node1.x1+" "+node1.y1+" "+node1.x2+" "+node1.y2+" size: "+node1.points.size());
 		node1.getAllId();
+		List<Integer> allnodesID = new ArrayList<Integer>(allNodes.keySet());
+		
+		System.out.println(Arrays.toString(allnodesID.toArray()));
 		
 		
 	}
+	
+	public static Object getKeyFromValue(HashMap hm, Object value) {
+	    for (Object o : hm.keySet()) {
+	      if (hm.get(o).equals(value)) {
+	        return o;
+	      }
+	    }
+	    return null;
+	  }
 	
 		//Find the leaf node that contains the point
 		
@@ -73,18 +89,25 @@ public class Assignment1 {
 					//check if the 'root' is the tree's root
 					//if yes, the 'root' is both the tree root and leaf node
 					if(root.parentNodeID==0){
+						//remove the tree root first
+						allNodes.remove(getKeyFromValue(allNodesParentID,0));
+						
 						// create a new node replacing root with no child nodes
-						allNodes.put(ID, new Node(0, null,null,false,ID));
+						
+						allNodes.put(ID, new Node(0, new ArrayList<Node>(),new ArrayList<Point>(),false,ID));
+						allNodesParentID.put(ID, 0);
 						ID=ID+1;
 						//add the two new split child nodes to all nodes list
-						allNodes.put(ID, new Node(ID-1, null, twoSubNodes.get(0).points, true,ID));	
+						allNodes.put(ID, new Node(ID-1, new ArrayList<Node>(), twoSubNodes.get(0).points, true,ID));	
+						allNodesParentID.put(ID, ID-1);
 						ID=ID+1;
-						allNodes.put(ID, new Node(ID-2, null, twoSubNodes.get(1).points, true,ID));
+						allNodes.put(ID, new Node(ID-2, new ArrayList<Node>(), twoSubNodes.get(1).points, true,ID));
+						allNodesParentID.put(ID, ID-2);
 						ID=ID+1;
-						//add two nodes to their parent node's child node list						
-						allNodes.get(allNodes.size()-3).childNodes.add(allNodes.get(allNodes.size()-2));
-						allNodes.get(allNodes.size()-3).childNodes.add(allNodes.get(allNodes.size()-1));
-						allNodes.remove(root);
+						//add two nodes to their parent node's child node list							
+						allNodes.get(ID-3).childNodes.add(allNodes.get(ID-2));
+						allNodes.get(ID-3).childNodes.add(allNodes.get(ID-1));
+						//allNodes.remove();
 					}else{
 						//update MBR of 
 					}
@@ -95,28 +118,28 @@ public class Assignment1 {
 					
 				//update leaf size
 				//if this is the first point
-				if(root.points.size() == 1){
-					root.x1 = point.x;
-					root.x2 = point.x;
-					root.y1 = point.y;
-					root.y2 = point.y;
-				}
-				else{
-					for(int i=0; i<root.points.size(); i++){
-						if(root.points.get(i).x<=root.x1){
-							root.x1=root.points.get(i).x;
-						}
-						if(root.points.get(i).x>=root.x2){
-							root.x2=root.points.get(i).x;
-						}
-						if(root.points.get(i).y>=root.y1){
-							root.y1=root.points.get(i).y;
-						}
-						if(root.points.get(i).y<=root.y2){
-							root.y2=root.points.get(i).y;
-						}
-					}
-				}
+//				if(root.points.size() == 1){
+//					root.x1 = point.x;
+//					root.x2 = point.x;
+//					root.y1 = point.y;
+//					root.y2 = point.y;
+//				}
+//				else{
+//					for(int i=0; i<root.points.size(); i++){
+//						if(root.points.get(i).x<=root.x1){
+//							root.x1=root.points.get(i).x;
+//						}
+//						if(root.points.get(i).x>=root.x2){
+//							root.x2=root.points.get(i).x;
+//						}
+//						if(root.points.get(i).y>=root.y1){
+//							root.y1=root.points.get(i).y;
+//						}
+//						if(root.points.get(i).y<=root.y2){
+//							root.y2=root.points.get(i).y;
+//						}
+//					}
+//				}
 					//handle overflow function
 				
 				
