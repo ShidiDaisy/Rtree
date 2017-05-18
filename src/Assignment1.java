@@ -9,19 +9,23 @@ public class Assignment1 {
 	private final static int B = 5;
 	private final static int zeropoint4B=(int) Math.ceil(0.4*B); 
 	static ArrayList<Node> nodeList = new ArrayList<Node>();
+	static ArrayList<Node> allNodes=new ArrayList<Node>();
+	static int ID=1;
 	
 	public static void main(String[] args) {
 		System.out.println("0.4B = "+zeropoint4B);
-		//A list containing all nodes number	
-	    //nodeList=new ArrayList<Node>();
-		int nodeNum=0;
+		//A list containing all nodes
+		
+		//assignment node id
+		//int nodeID=1;
+
 		//build a R-tree
 		Point point1 = new Point(0,5,1);
 		Point point2 = new Point(5,2,2);
-		Node node1 = new Node();
-		nodeNum=nodeNum+1;
-	//	nodeList.add(node1);
-		node1.asLeaf=true;
+		Node node1 = new Node(null, null,null,true,ID);
+		ID=ID+1;
+		allNodes.add(node1);
+//		nodeNum=nodeNum+1;
 		Insertion(node1,point1);
 		System.out.println(node1.x1+" "+node1.y1+" "+node1.x2+" "+node1.y2+" size: "+node1.points.size());
 		node1.getAllId();
@@ -30,11 +34,12 @@ public class Assignment1 {
 		node1.getAllId();
 	}
 	
-		//Find the root
+		//Find the leaf node that contains the point
 		
 		//Insertion
 		public static void Insertion(Node root, Point point){
 			
+			//check if the node(root) to be inserted is the leafnode
 			if(root.getLeaf() == true){
 				//add point to root
 				root.addPoint2Node(point);
@@ -42,6 +47,29 @@ public class Assignment1 {
 				if(root.points.size()>B){
 					//handle overflow
 					//split first
+					ArrayList<Node> twoSubNodes=SplitLeaf(root);	
+
+					//check if the 'root' is the tree's root
+					//if yes, the 'root' is both the tree root and leaf node
+					if(root.parentNode==null){
+						// create a new node replacing root with no child nodes
+						allNodes.add(new Node(null, null,null,false,ID));
+						ID=ID+1;
+						//add the two new split child nodes to all nodes list
+						allNodes.add(new Node(allNodes.get(allNodes.size()-1), null, twoSubNodes.get(0).points, true,ID));	
+						ID=ID+1;
+						allNodes.add(new Node(allNodes.get(allNodes.size()-2), null, twoSubNodes.get(1).points, true,ID));
+						ID=ID+1;
+						//add two nodes to their parent node's child node list						
+						allNodes.get(allNodes.size()-3).childNodes.add(allNodes.get(allNodes.size()-2));
+						allNodes.get(allNodes.size()-3).childNodes.add(allNodes.get(allNodes.size()-1));
+						allNodes.remove(root);
+					}else{
+						//update MBR of 
+					}
+					
+					
+					
 				}
 					
 				//update leaf size
@@ -255,15 +283,35 @@ public class Assignment1 {
 			
 			//the nodes in this node
 			ArrayList<Node> childNodes = new ArrayList<Node>();
+			//parent node
+			Node parentNode= new Node();
+			//Node ID
+			private int id;
 			
 			public Node(){}
 			
-			public Node(float x1, float y1, float x2, float y2, boolean asLeaf){
-				this.x1 = x1;
-				this.y1 = y1;
-				this.x2 = x2;
-				this.y2 = y2;
+			public Node(Node parentNode,ArrayList<Node> childNodes, ArrayList<Point> points, boolean asLeaf, int id){
+				this.parentNode = parentNode;
+				this.childNodes = childNodes;
+				this.points = points;
 				this.asLeaf = asLeaf;
+				this.id=id;
+			}
+			
+//			public Node(float x1, float y1, float x2, float y2, boolean asLeaf){
+//				this.x1 = x1;
+//				this.y1 = y1;
+//				this.x2 = x2;
+//				this.y2 = y2;
+//				this.asLeaf = asLeaf;
+//			}
+			
+			public void setID(int id){
+				this.id = id;
+			}
+			
+			public int getID(){
+				return id;
 			}
 			
 			public void setX1(float x1){
