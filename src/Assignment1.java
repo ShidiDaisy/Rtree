@@ -1,7 +1,9 @@
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.math.*;
 
 public class Assignment1 {
@@ -9,7 +11,9 @@ public class Assignment1 {
 	private final static int B = 5;
 	private final static int zeropoint4B=(int) Math.ceil(0.4*B); 
 	static ArrayList<Node> nodeList = new ArrayList<Node>();
-	static ArrayList<Node> allNodes=new ArrayList<Node>();
+	//static ArrayList<Node> allNodes=new ArrayList<Node>();
+	
+	static HashMap<Integer,Node> allNodes = new HashMap<>();
 	static int ID=1;
 	
 	public static void main(String[] args) {
@@ -19,19 +23,34 @@ public class Assignment1 {
 		//assignment node id
 		//int nodeID=1;
 
-		//build a R-tree
+		//build an R-tree
 		Point point1 = new Point(0,5,1);
-		Point point2 = new Point(5,2,2);
-		Node node1 = new Node(null, null,null,true,ID);
+//		Point point2 = new Point(5,2,2);
+//		Point point3 = new Point(1,4,3);
+//		Point point4 = new Point(6,1,4);
+//		Point point5 = new Point(-1,3,5);
+//		Point point6 = new Point(8,-1,6);
+		Node node1 = new Node(0, null,null,true,ID);
+		allNodes.put(ID,node1);
 		ID=ID+1;
-		allNodes.add(node1);
+		
 //		nodeNum=nodeNum+1;
 		Insertion(node1,point1);
 		System.out.println(node1.x1+" "+node1.y1+" "+node1.x2+" "+node1.y2+" size: "+node1.points.size());
+
+//		Insertion(node1,point2);
+//		System.out.println(node1.x1+" "+node1.y1+" "+node1.x2+" "+node1.y2+" size: "+node1.points.size());
+//		Insertion(node1,point3);
+//		System.out.println(node1.x1+" "+node1.y1+" "+node1.x2+" "+node1.y2+" size: "+node1.points.size());
+//		Insertion(node1,point4);
+//		System.out.println(node1.x1+" "+node1.y1+" "+node1.x2+" "+node1.y2+" size: "+node1.points.size());
+//		Insertion(node1,point5);
+//		System.out.println(node1.x1+" "+node1.y1+" "+node1.x2+" "+node1.y2+" size: "+node1.points.size());;
+//		Insertion(node1,point6);
+//		System.out.println(node1.x1+" "+node1.y1+" "+node1.x2+" "+node1.y2+" size: "+node1.points.size());
 		node1.getAllId();
-		Insertion(node1,point2);
-		System.out.println(node1.x1+" "+node1.y1+" "+node1.x2+" "+node1.y2+" size: "+node1.points.size());
-		node1.getAllId();
+		
+		
 	}
 	
 		//Find the leaf node that contains the point
@@ -43,22 +62,24 @@ public class Assignment1 {
 			if(root.getLeaf() == true){
 				//add point to root
 				root.addPoint2Node(point);
+				
 				//check if the node overflows
 				if(root.points.size()>B){
 					//handle overflow
 					//split first
-					ArrayList<Node> twoSubNodes=SplitLeaf(root);	
-
+					ArrayList<Node> twoSubNodes=SplitLeaf(root);
+					//System.out.println(twoSubNodes.get(0).points);
+					
 					//check if the 'root' is the tree's root
 					//if yes, the 'root' is both the tree root and leaf node
-					if(root.parentNode==null){
+					if(root.parentNodeID==0){
 						// create a new node replacing root with no child nodes
-						allNodes.add(new Node(null, null,null,false,ID));
+						allNodes.put(ID, new Node(0, null,null,false,ID));
 						ID=ID+1;
 						//add the two new split child nodes to all nodes list
-						allNodes.add(new Node(allNodes.get(allNodes.size()-1), null, twoSubNodes.get(0).points, true,ID));	
+						allNodes.put(ID, new Node(ID-1, null, twoSubNodes.get(0).points, true,ID));	
 						ID=ID+1;
-						allNodes.add(new Node(allNodes.get(allNodes.size()-2), null, twoSubNodes.get(1).points, true,ID));
+						allNodes.put(ID, new Node(ID-2, null, twoSubNodes.get(1).points, true,ID));
 						ID=ID+1;
 						//add two nodes to their parent node's child node list						
 						allNodes.get(allNodes.size()-3).childNodes.add(allNodes.get(allNodes.size()-2));
@@ -284,14 +305,14 @@ public class Assignment1 {
 			//the nodes in this node
 			ArrayList<Node> childNodes = new ArrayList<Node>();
 			//parent node
-			Node parentNode= new Node();
+			private int parentNodeID;
 			//Node ID
 			private int id;
 			
 			public Node(){}
 			
-			public Node(Node parentNode,ArrayList<Node> childNodes, ArrayList<Point> points, boolean asLeaf, int id){
-				this.parentNode = parentNode;
+			public Node(int parentNodeID, ArrayList<Node> childNodes, ArrayList<Point> points, boolean asLeaf, int id){
+				this.parentNodeID = parentNodeID;
 				this.childNodes = childNodes;
 				this.points = points;
 				this.asLeaf = asLeaf;
