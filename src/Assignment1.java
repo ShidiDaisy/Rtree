@@ -36,7 +36,7 @@ public class Assignment1 {
 		Node node1 = new Node(0, new ArrayList<Node>(),new ArrayList<Point>(),true,ID);
 		allNodes.put(ID,node1);
 		allNodesParentID.put(ID, 0);
-		ID=ID+1;
+		ID=ID+1;	
 		
 //		nodeNum=nodeNum+1;
 		Insertion(node1,point1);
@@ -52,11 +52,22 @@ public class Assignment1 {
 		System.out.println(node1.x1+" "+node1.y1+" "+node1.x2+" "+node1.y2+" size: "+node1.points.size());;
 		Insertion(node1,point6);
 		System.out.println(node1.x1+" "+node1.y1+" "+node1.x2+" "+node1.y2+" size: "+node1.points.size());
-		node1.getAllId();
+		
+		System.out.println(point1.getId()+" "+point1.x+" "+point1.y);
+		node1.getAllPointsId();
+
+		
 		List<Integer> allnodesID = new ArrayList<Integer>(allNodes.keySet());
 		
 		System.out.println(Arrays.toString(allnodesID.toArray()));
-		
+		System.out.println("Node 2's points (should be nothing)\n");
+		allNodes.get(2).getAllPointsId();
+		System.out.println("Node 2's nodes (should be 3,4)\n");
+		allNodes.get(2).getAllNodesId();
+		System.out.println("Node 3's points (should be 2,4,6)\n");
+		allNodes.get(3).getAllPointsId();
+		System.out.println("Node 4's points (should be 1,3,5)\n");
+		allNodes.get(4).getAllPointsId();
 		
 	}
 	
@@ -83,9 +94,7 @@ public class Assignment1 {
 				if(root.points.size()>B){
 					//handle overflow
 					//split first
-					ArrayList<Node> twoSubNodes=SplitLeaf(root);
-					//System.out.println(twoSubNodes.get(0).points);
-					
+					ArrayList<Node> twoSubNodes=SplitLeaf(root);										
 					//check if the 'root' is the tree's root
 					//if yes, the 'root' is both the tree root and leaf node
 					if(root.parentNodeID==0){
@@ -111,9 +120,7 @@ public class Assignment1 {
 					}else{
 						//update MBR of 
 					}
-					
-					
-					
+										
 				}
 					
 				//update leaf size
@@ -167,6 +174,11 @@ public class Assignment1 {
 			ArrayList<Node> twoNodesResult= new ArrayList<Node>();
 			
 			//******************//duplicate the following to sort y
+			
+			
+			
+			
+			
 			//sort the points by X values	
 			ArrayList<Point> sortedXPoint= leafnode.points;
 			Collections.sort(sortedXPoint, new Comparator<Point>(){
@@ -175,6 +187,9 @@ public class Assignment1 {
 					return result;
 				}
 			});
+			for(int i=0;i<sortedXPoint.size();i++){
+				System.out.println(sortedXPoint.get(i).getId()+" "+sortedXPoint.get(i).getX()+" "+sortedXPoint.get(i).getY());
+			}
 			
 			//calculate the perimeter sum of MBR(S1) and MBR(S2); 
 			//record it if this is the best split so far
@@ -188,6 +203,18 @@ public class Assignment1 {
 				for(int j=i;j<(B+1);j++){
 					S2.add(sortedXPoint.get(j));
 				}
+				System.out.println("S1\n");
+				for(int j=0;j<S1.size();j++){
+					
+					System.out.println(S1.get(j).getId()+" "+S1.get(j).getX()+" "+S1.get(j).getY());
+				}
+				System.out.println("S2\n");
+				for(int j=0;j<S2.size();j++){
+					
+					System.out.println(S2.get(j).getId()+" "+S2.get(j).getX()+" "+S2.get(j).getY());
+				}
+				
+				
 				
 				//store the first point's Y in S1 to be the smallest/largest y value at first
 				float minYS1=S1.get(0).getY();
@@ -201,6 +228,8 @@ public class Assignment1 {
 						maxYS1=S1.get(j).getY();
 					}
 				}
+				System.out.println("min Y S1: "+minYS1);
+				System.out.println("max Y S1: "+maxYS1);
 				
 				//store the first point's Y in S2 to be the smallest/largest y value at first
 				float minYS2=S2.get(0).getY();
@@ -214,10 +243,16 @@ public class Assignment1 {
 						maxYS2=S2.get(j).getY();
 					}
 				}	
+				System.out.println("min Y S2: "+minYS2);
+				System.out.println("max Y S2: "+maxYS2);
+				
 				
 				float perimeterS1X=(S1.get(S1.size()-1).getX()-S1.get(0).getX())*2+(maxYS1-minYS1)*2;
 				float perimeterS2X=(S2.get(S2.size()-1).getX()-S2.get(0).getX())*2+(maxYS2-minYS2)*2;
 				float totalPerimeterX=perimeterS1X+perimeterS2X;
+				
+				System.out.println("total perimeter: "+totalPerimeterX);
+				
 				
 				if(smallestPerimeter==-1){ 				//no need to add
 					smallestPerimeter=totalPerimeterX;  //these lines
@@ -233,8 +268,23 @@ public class Assignment1 {
 					
 			}
 			
-			
+			System.out.println("smallest perimeter for x: "+smallestPerimeter);
+			System.out.println("best S1 so far for x");
+			for(int j=0;j<bestS1.size();j++){
+				
+				System.out.println(bestS1.get(j).getId()+" "+bestS1.get(j).getX()+" "+bestS1.get(j).getY());
+			}
+			System.out.println("best S2 so far for x");
+			for(int j=0;j<bestS2.size();j++){
+				
+				System.out.println(bestS2.get(j).getId()+" "+bestS2.get(j).getX()+" "+bestS2.get(j).getY());
+			}
 
+			
+			
+			
+			
+			
 			//sort the points by Y values
 			ArrayList<Point> sortedYPoint= leafnode.points;
 			Collections.sort(sortedYPoint, new Comparator<Point>(){
@@ -243,6 +293,12 @@ public class Assignment1 {
 					return result;
 				}
 			});
+			
+			System.out.println("sorted Y points");
+			for(int i=0;i<sortedYPoint.size();i++){
+				System.out.println(sortedYPoint.get(i).getId()+" "+sortedYPoint.get(i).getX()+" "+sortedXPoint.get(i).getY());
+			}
+			
 			//calculate the perimeter sum of MBR(S1) and MBR(S2); 
 			//record it if this is the best split so far
 			for(int i=zeropoint4B;i<=B-zeropoint4B+1;i++){
@@ -254,6 +310,16 @@ public class Assignment1 {
 				}
 				for(int j=i;j<(B+1);j++){
 					S2Y.add(sortedYPoint.get(j));
+				}
+				System.out.println("S1Y\n");
+				for(int j=0;j<S1Y.size();j++){
+					
+					System.out.println(S1Y.get(j).getId()+" "+S1Y.get(j).getX()+" "+S1Y.get(j).getY());
+				}
+				System.out.println("S2Y\n");
+				for(int j=0;j<S2Y.size();j++){
+					
+					System.out.println(S2Y.get(j).getId()+" "+S2Y.get(j).getX()+" "+S2Y.get(j).getY());
 				}
 				
 				//store the first point's X in S1 to be the smallest/largest x value at first
@@ -268,6 +334,9 @@ public class Assignment1 {
 						maxXS1=S1Y.get(j).getX();
 					}
 				}
+				System.out.println("min X S1Y: "+minXS1);
+				System.out.println("max X S1Y: "+maxXS1);
+				
 				
 				//store the first point's X in S2 to be the smallest/largest X value at first
 				float minXS2=S2Y.get(0).getX();
@@ -280,11 +349,17 @@ public class Assignment1 {
 					if(S2Y.get(j).getX()>=maxXS2){
 						maxXS2=S2Y.get(j).getX();
 					}
-				}	
+				}
+				System.out.println("min X S2Y: "+minXS2);
+				System.out.println("max X S2Y: "+maxXS2);
+				
 				
 				float perimeterS1Y=(S1Y.get(S1Y.size()-1).getY()-S1Y.get(0).getY())*2+(maxXS1-minXS1)*2;
-				float perimeterS2Y=(S2Y.get(S2Y.size()-1).getX()-S2Y.get(0).getX())*2+(maxXS2-minXS2)*2;
+				float perimeterS2Y=(S2Y.get(S2Y.size()-1).getY()-S2Y.get(0).getY())*2+(maxXS2-minXS2)*2;
 				float totalPerimeterY=perimeterS1Y+perimeterS2Y;
+								
+				System.out.println("total perimeter: "+totalPerimeterY);
+				
 				
 				if(totalPerimeterY<=smallestPerimeter){
 						smallestPerimeter=totalPerimeterY;
@@ -292,9 +367,22 @@ public class Assignment1 {
 						bestS2=S2Y;
 				}
 				
+
+				
+				
 					
 			}
-			
+			System.out.println("smallest perimeter for Y: "+smallestPerimeter);
+			System.out.println("best S1 so far for Y");
+			for(int j=0;j<bestS1.size();j++){
+				
+				System.out.println(bestS1.get(j).getId()+" "+bestS1.get(j).getX()+" "+bestS1.get(j).getY());
+			}
+			System.out.println("best S2 so far for Y");
+			for(int j=0;j<bestS2.size();j++){
+				
+				System.out.println(bestS2.get(j).getId()+" "+bestS2.get(j).getX()+" "+bestS2.get(j).getY());
+			}
 			newLeafNode1.points=bestS1;
 			newLeafNode2.points=bestS2;
 			twoNodesResult.add(newLeafNode1);
@@ -318,8 +406,8 @@ public class Assignment1 {
 			boolean asLeaf;
 			
 			ArrayList<Point> points = new ArrayList<Point>();
-			
-			public void getAllId(){
+			//get all point's id for this node
+			public void getAllPointsId(){
 				for(int i=0;i<this.points.size();i++){
 					System.out.println(this.points.get(i).getId());
 				}
@@ -327,6 +415,13 @@ public class Assignment1 {
 			
 			//the nodes in this node
 			ArrayList<Node> childNodes = new ArrayList<Node>();
+			//get all child nodes id for this node
+			public void getAllNodesId(){
+				for(int i=0;i<this.childNodes.size();i++){
+					System.out.println(this.childNodes.get(i).getID());
+				}
+			}
+			
 			//parent node
 			private int parentNodeID;
 			//Node ID
