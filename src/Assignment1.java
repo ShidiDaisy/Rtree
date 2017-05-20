@@ -38,9 +38,7 @@ public class Assignment1 {
 		allNodesParentID.put(ID, 0);
 		ID=ID+1;	
 		
-		
 //		nodeNum=nodeNum+1;
-
 		Insertion(node1,point1);
 		System.out.println(node1.x1+" "+node1.y1+" "+node1.x2+" "+node1.y2+" size: "+node1.points.size());
 
@@ -70,35 +68,6 @@ public class Assignment1 {
 		allNodes.get(3).getAllPointsId();
 		System.out.println("Node 4's points (should be 1,3,5)\n");
 		allNodes.get(4).getAllPointsId();
-
-		
-		//MBR test
-		/*
-		Node node2 = new Node();
-		allNodes.put(2,node2);
-		node2.x1 = 1;
-		node2.y1 = 2;
-		node2.x2 = 5;
-		node2.y2 = 4;
-		ArrayList<Point> node2child = new ArrayList<Point>();
-		node2child.add(point2);
-		node2child.add(point3);
-		node2.points = node2child;
-		node2.parentNodeID = 3;
-		
-		Node node3 = new Node();
-		allNodes.put(3,node3);
-		ID = ID + 1;
-		node3.childNodes.add(node2);
-		node3.x1 = 0;
-		node3.x2 = 5;
-		node3.y1 = 2;
-		node3.y2 = 5;
-		
-		float mbr = UpdateMBR(node2, point4);
-		System.out.println("Update mbr to: " + mbr);
-		System.out.println("Update node 3 mbr to: " + node3.MBR);
-		*/
 		
 	}
 	
@@ -426,42 +395,7 @@ public class Assignment1 {
 			//Split
 		}
 		
-		//Update MBR
-		public static float UpdateMBR(Node u, Point point){
-			
-			float mbr = 0;
-			//if asLeaf == true	
-			//if this is the first point
-			if(u.points.size() == 1){
-				u.x1 = point.x;
-				u.x2 = point.x;
-				u.y1 = point.y;
-				u.y2 = point.y;
-			}//if this is not the first point
-			else{
-				if(point.x < u.x1){
-					u.x1 = point.x;
-				}
-				if(point.x > u.x2){
-					u.x2 = point.x;
-				}
-				if(point.y < u.y1){
-					u.y1 = point.y;
-				}
-				if(point.y > u.y2){
-					u.y2 = point.y;
-				}
-			}
-			
-			//Update its parent
-			if(u.parentNodeID != 0){
-				Node parentNode = allNodes.get(u.parentNodeID);
-				parentNode.MBR = UpdateMBR(parentNode,point);
-			}
-			
-			mbr = (Math.abs(u.x2-u.x1) + Math.abs(u.y2-u.y1))*2;
-			return mbr;	
-		}
+		
 		
 		//rectangle
 		public static class Node{
@@ -469,12 +403,29 @@ public class Assignment1 {
 			private float y1;
 			private float x2;
 			private float y2;
-			private float MBR;
 			boolean asLeaf;
-			ArrayList<Point> points = new ArrayList<Point>(); 
-			ArrayList<Node> childNodes = new ArrayList<Node>(); //the nodes in this node
-			private int parentNodeID; //parent node
-			private int id;//Node ID
+			
+			ArrayList<Point> points = new ArrayList<Point>();
+			//get all point's id for this node
+			public void getAllPointsId(){
+				for(int i=0;i<this.points.size();i++){
+					System.out.println(this.points.get(i).getId());
+				}
+			}
+			
+			//the nodes in this node
+			ArrayList<Node> childNodes = new ArrayList<Node>();
+			//get all child nodes id for this node
+			public void getAllNodesId(){
+				for(int i=0;i<this.childNodes.size();i++){
+					System.out.println(this.childNodes.get(i).getID());
+				}
+			}
+			
+			//parent node
+			private int parentNodeID;
+			//Node ID
+			private int id;
 			
 			public Node(){}
 			
@@ -552,19 +503,7 @@ public class Assignment1 {
 				childNodes.add(node);
 			} 
 			
-			//get all point's id for this node
-			public void getAllPointsId(){
-				for(int i=0;i<this.points.size();i++){
-					System.out.println(this.points.get(i).getId());
-				}
-			}
 			
-			//get all child nodes id for this node
-			public void getAllNodesId(){
-				for(int i=0;i<this.childNodes.size();i++){
-					System.out.println(this.childNodes.get(i).getID());
-				}
-			}
 		}
 
 
