@@ -33,7 +33,8 @@ public class Assignment1 {
 		Point point5 = new Point(-1,3,5);
 		Point point6 = new Point(8,-1,6);
 		Point point7 = new Point(-5,-2,7);
-		Point point8 = new Point(-4,1,8);
+		Point point8 = new Point(-4,-1,8);
+		Point point9 = new Point(-4,-2,9);
 //	 	create a false node whose id is 0
 //		Node node0 =new Node(-1,new ArrayList<Node>(),new ArrayList<Point>(),false,0);
 		
@@ -60,14 +61,6 @@ public class Assignment1 {
 	//	System.out.println(node1.x1+" "+node1.y1+" "+node1.x2+" "+node1.y2+" size: "+node1.points.size());
 
 		
-		
-		System.out.println(point1.getId()+" "+point1.x+" "+point1.y);
-		node1.getAllPointsId();
-
-		
-		List<Integer> allnodesID = new ArrayList<Integer>(allNodes.keySet());
-		
-		System.out.println(Arrays.toString(allnodesID.toArray()));
 		System.out.println("Node 2's points (should be nothing)\n");
 		allNodes.get(2).getAllPointsId();
 		System.out.println("Node 2's nodes (should be 3,4)\n");
@@ -91,6 +84,17 @@ public class Assignment1 {
 		allNodes.get(3).getAllPointsId();
 		System.out.println("Node 4's points (should be 1,3,5,7,8)\n");
 		allNodes.get(4).getAllPointsId();
+		
+		
+		Insertion(allNodes.get(getKeyFromValue(allNodesParentID,0)),point9);
+		
+		List<Integer> allnodesID = new ArrayList<Integer>(allNodes.keySet());
+		System.out.println(Arrays.toString(allnodesID.toArray()));
+		System.out.println("Node 5's points (should be 1,3,5)\n");
+		allNodes.get(5).getAllPointsId();
+		System.out.println("Node 6's points (should be 7,8,9)\n");
+		allNodes.get(6).getAllPointsId();
+		
 	}
 	//used to get the HashMap value by giving key, used to find the node that doesn't have a parent (root)
 	public static Object getKeyFromValue(HashMap hm, Object value) {
@@ -203,6 +207,89 @@ public class Assignment1 {
 	}
 	
 	
+	//Handle overflow
+	public static void HandleOverflow(Node root){
+		
+		//Split first
+		ArrayList<Node> twoSubLeafNodes = new ArrayList<Node>();
+		ArrayList<Node> twoSubInternalNodes = new ArrayList<Node>();
+		
+		//**************check if this node is leaf node or not
+		// then do different split
+		if(root.asLeaf==true){
+			twoSubLeafNodes=SplitLeaf(root);	
+			
+			if(root.parentNodeID==0){
+				//remove the tree root first !!!!!should be two hashmaps all nodes+parent lists
+				allNodes.remove(getKeyFromValue(allNodesParentID,0));
+				allNodesParentID.remove(getKeyFromValue(allNodesParentID,0));
+				
+				// create a new node replacing root with no child nodes						
+				allNodes.put(ID, new Node(0, new ArrayList<Node>(),new ArrayList<Point>(),false,ID));
+				allNodesParentID.put(ID, 0);
+				ID=ID+1;
+				//add the two new split child nodes to all nodes list and parent list
+				allNodes.put(ID, new Node(ID-1, new ArrayList<Node>(), twoSubLeafNodes.get(0).points, true,ID));	
+				allNodesParentID.put(ID, ID-1);
+				ID=ID+1;
+				allNodes.put(ID, new Node(ID-2, new ArrayList<Node>(), twoSubLeafNodes.get(1).points, true,ID));
+				allNodesParentID.put(ID, ID-2);
+				ID=ID+1;
+				//add two nodes to their parent node's child node list							
+				allNodes.get(ID-3).childNodes.add(allNodes.get(ID-2));
+				allNodes.get(ID-3).childNodes.add(allNodes.get(ID-1));
+			}
+			else{
+				//this node has a parent (parentNodeID!=0)
+				//get this node's parent
+				Node parentNode = allNodes.get((root.parentNodeID));
+				
+				//*********Remove this node***************
+				//*********follow this order**************
+				//Remove this node's parent node from hashmap
+				allNodesParentID.remove(root.id);
+				//Remove this node from it's parent node's child node list
+				parentNode.childNodes.remove(root);
+				//Remove this node from all nodes list
+				allNodes.remove(root.id);
+
+				//create two new split leaf nodes
+				//**********First Node********
+				//1 all nodes list
+				allNodes.put(ID, new Node(parentNode.id, new ArrayList<Node>(), twoSubLeafNodes.get(0).points, true,ID));
+				//2 it's parent list
+				allNodesParentID.put(ID, parentNode.id);
+				//3 add to its parent node's child node list
+				parentNode.childNodes.add(allNodes.get(ID));
+				//4 itself child node list (no need)
+				//5 it's child nodes' parent list (no need)
+				//6 ID++
+				ID=ID+1;
+				
+				//**********Second Node********
+				//1 all nodes list
+				allNodes.put(ID, new Node(parentNode.id, new ArrayList<Node>(), twoSubLeafNodes.get(1).points, true,ID));
+				//2 it's parent list
+				allNodesParentID.put(ID, parentNode.id);
+				//3 add to its parent node's child node list
+				parentNode.childNodes.add(allNodes.get(ID));
+				//4 itself child node list (no need)
+				//5 it's child nodes' parent list (no need)
+				//6 ID++
+				ID=ID+1;
+
+			}	
+			
+		}
+		else{
+			//twoSubInternalNodes=splitInternal(root);
+		}
+											
+		//check if the 'root' is the tree's root
+		//if yes, the 'root' is both the tree root and leaf node
+
+	}
+	
 		//Insertion
 		public static void Insertion(Node root, Point point){
 			
@@ -214,36 +301,8 @@ public class Assignment1 {
 				//check if the node overflows
 				if(root.points.size()>B){
 					//handle overflow
-					//split first
-					ArrayList<Node> twoSubNodes=SplitLeaf(root);										
-					//check if the 'root' is the tree's root
-					//if yes, the 'root' is both the tree root and leaf node
-					if(root.parentNodeID==0){
-						//remove the tree root first
-						allNodes.remove(getKeyFromValue(allNodesParentID,0));
-						allNodesParentID.remove(getKeyFromValue(allNodesParentID,0));
-						
-						// create a new node replacing root with no child nodes						
-						allNodes.put(ID, new Node(0, new ArrayList<Node>(),new ArrayList<Point>(),false,ID));
-						allNodesParentID.put(ID, 0);
-						ID=ID+1;
-						//add the two new split child nodes to all nodes list
-						allNodes.put(ID, new Node(ID-1, new ArrayList<Node>(), twoSubNodes.get(0).points, true,ID));	
-						allNodesParentID.put(ID, ID-1);
-						ID=ID+1;
-						allNodes.put(ID, new Node(ID-2, new ArrayList<Node>(), twoSubNodes.get(1).points, true,ID));
-						allNodesParentID.put(ID, ID-2);
-						ID=ID+1;
-						//add two nodes to their parent node's child node list							
-						allNodes.get(ID-3).childNodes.add(allNodes.get(ID-2));
-						allNodes.get(ID-3).childNodes.add(allNodes.get(ID-1));
-						//allNodes.remove();
-					}
-					//else the 'root' which splits is a leaf but not a tree root
-					else{
-						
-						//update MBR of 
-					}
+					HandleOverflow(root);
+
 										
 				}
 					
@@ -565,10 +624,6 @@ public class Assignment1 {
 			return twoNodesResult;
 		}
 		
-		//Handle overflow
-		public static void HandleOverflow(){
-			//Split
-		}
 		
 		
 		
