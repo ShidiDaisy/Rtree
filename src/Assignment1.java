@@ -32,26 +32,34 @@ public class Assignment1 {
 		Point point4 = new Point(6,1,4);
 		Point point5 = new Point(-1,3,5);
 		Point point6 = new Point(8,-1,6);
+		Point point7 = new Point(-5,-2,7);
+		Point point8 = new Point(-4,1,8);
+//	 	create a false node whose id is 0
+//		Node node0 =new Node(-1,new ArrayList<Node>(),new ArrayList<Point>(),false,0);
+		
 //		Node node1= new Node();
 		Node node1 = new Node(0, new ArrayList<Node>(),new ArrayList<Point>(),true,ID);
 		allNodes.put(ID,node1);
 		allNodesParentID.put(ID, 0);
 		ID=ID+1;	
 		
+		
 //		nodeNum=nodeNum+1;
-		Insertion(node1,point1);
-		System.out.println(node1.x1+" "+node1.y1+" "+node1.x2+" "+node1.y2+" size: "+node1.points.size());
+		Insertion(allNodes.get(getKeyFromValue(allNodesParentID,0)),point1);
+	//	System.out.println(node1.x1+" "+node1.y1+" "+node1.x2+" "+node1.y2+" size: "+node1.points.size());
 
-		Insertion(node1,point2);
-		System.out.println(node1.x1+" "+node1.y1+" "+node1.x2+" "+node1.y2+" size: "+node1.points.size());
-		Insertion(node1,point3);
-		System.out.println(node1.x1+" "+node1.y1+" "+node1.x2+" "+node1.y2+" size: "+node1.points.size());
-		Insertion(node1,point4);
-		System.out.println(node1.x1+" "+node1.y1+" "+node1.x2+" "+node1.y2+" size: "+node1.points.size());
-		Insertion(node1,point5);
-		System.out.println(node1.x1+" "+node1.y1+" "+node1.x2+" "+node1.y2+" size: "+node1.points.size());;
-		Insertion(node1,point6);
-		System.out.println(node1.x1+" "+node1.y1+" "+node1.x2+" "+node1.y2+" size: "+node1.points.size());
+		Insertion(allNodes.get(getKeyFromValue(allNodesParentID,0)),point2);
+	//	System.out.println(node1.x1+" "+node1.y1+" "+node1.x2+" "+node1.y2+" size: "+node1.points.size());
+		Insertion(allNodes.get(getKeyFromValue(allNodesParentID,0)),point3);
+	//	System.out.println(node1.x1+" "+node1.y1+" "+node1.x2+" "+node1.y2+" size: "+node1.points.size());
+		Insertion(allNodes.get(getKeyFromValue(allNodesParentID,0)),point4);
+	//	System.out.println(node1.x1+" "+node1.y1+" "+node1.x2+" "+node1.y2+" size: "+node1.points.size());
+		Insertion(allNodes.get(getKeyFromValue(allNodesParentID,0)),point5);
+	//	System.out.println(node1.x1+" "+node1.y1+" "+node1.x2+" "+node1.y2+" size: "+node1.points.size());;
+		Insertion(allNodes.get(getKeyFromValue(allNodesParentID,0)),point6);
+	//	System.out.println(node1.x1+" "+node1.y1+" "+node1.x2+" "+node1.y2+" size: "+node1.points.size());
+
+		
 		
 		System.out.println(point1.getId()+" "+point1.x+" "+point1.y);
 		node1.getAllPointsId();
@@ -69,8 +77,22 @@ public class Assignment1 {
 		System.out.println("Node 4's points (should be 1,3,5)\n");
 		allNodes.get(4).getAllPointsId();
 		
+		//test choose sub-tree
+		Insertion(allNodes.get(getKeyFromValue(allNodesParentID,0)),point7);
+		
+		System.out.println("Node 3's points (should be 2,4,6)\n");
+		allNodes.get(3).getAllPointsId();
+		System.out.println("Node 4's points (should be 1,3,5,7)\n");
+		allNodes.get(4).getAllPointsId();
+		
+		Insertion(allNodes.get(getKeyFromValue(allNodesParentID,0)),point8);
+		
+		System.out.println("Node 3's points (should be 2,4,6)\n");
+		allNodes.get(3).getAllPointsId();
+		System.out.println("Node 4's points (should be 1,3,5,7,8)\n");
+		allNodes.get(4).getAllPointsId();
 	}
-	
+	//used to get the HashMap value by giving key, used to find the node that doesn't have a parent (root)
 	public static Object getKeyFromValue(HashMap hm, Object value) {
 	    for (Object o : hm.keySet()) {
 	      if (hm.get(o).equals(value)) {
@@ -78,14 +100,113 @@ public class Assignment1 {
 	      }
 	    }
 	    return null;
-	  }
+	}
 	
-		//Find the leaf node that contains the point
+	//A method to check if a node in the list has specific id (0)
+	public static boolean containsId(ArrayList<Node> parentNodes, int id) {
+	    for (Node object : parentNodes) {
+	        if (object.getID() == id) {
+	            return true;
+	        }
+	    }
+	    return false;
+	}
+	
+	//Update all nodes' MBR (x1,y1,x2,y2) to be able to locate the insert point.
+	public static void updateAllMBR(){
+		//get all leafnodes and put
+		ArrayList<Node> allLeafNodes = new ArrayList<Node>();
+		for (Integer key : allNodes.keySet()) {
+		    if(allNodes.get(key).asLeaf==true){
+		    	allLeafNodes.add(allNodes.get(key));
+		    }    
+		}
+		//print all leaf nodes
+		System.out.println("all leaf node IDs: ");
+		for (int i=0; i<allLeafNodes.size();i++) {
+		    System.out.println("ID="+allLeafNodes.get(i).getID()); 
+		}
+		//update each leafnode's MBR and store their parent's id, stop updating process 
+		//until the node doesn't have a parent (it's root)
+		ArrayList<Integer> parentNodesID = new ArrayList<Integer>();
 		
+		//update all leafnodes first, get all leafnode's parent to the parent list
+		//if the parent exists, ignore 
+		for (int i=0; i<allLeafNodes.size();i++) {
+			allLeafNodes.get(i).x1=allLeafNodes.get(i).points.get(0).x;
+			allLeafNodes.get(i).y1=allLeafNodes.get(i).points.get(0).y;
+			allLeafNodes.get(i).x2=allLeafNodes.get(i).points.get(0).x;
+			allLeafNodes.get(i).y2=allLeafNodes.get(i).points.get(0).y;
+			for(int j=1;j<allLeafNodes.get(i).points.size();j++){
+				if(allLeafNodes.get(i).points.get(j).x<allLeafNodes.get(i).x1){
+					allLeafNodes.get(i).x1=allLeafNodes.get(i).points.get(j).x;
+				}
+				if(allLeafNodes.get(i).points.get(j).x>allLeafNodes.get(i).x2){
+					allLeafNodes.get(i).x2=allLeafNodes.get(i).points.get(j).x;
+				}
+				if(allLeafNodes.get(i).points.get(j).y>allLeafNodes.get(i).y1){
+					allLeafNodes.get(i).y1=allLeafNodes.get(i).points.get(j).y;
+				}
+				if(allLeafNodes.get(i).points.get(j).y<allLeafNodes.get(i).y2){
+					allLeafNodes.get(i).y2=allLeafNodes.get(i).points.get(j).y;
+				}				
+			}
+			System.out.println("x1="+allLeafNodes.get(i).x1+", "+"y1="+allLeafNodes.get(i).y1+", "+"x2="+allLeafNodes.get(i).x2+", "+"y2="+allLeafNodes.get(i).y2);
+			//if parent list doesn't have this node's parent node ID, add to the list
+			if(!parentNodesID.contains((allLeafNodes.get(i).parentNodeID))){
+				parentNodesID.add((allLeafNodes.get(i).parentNodeID));
+			}
+			else{
+				System.out.println("node ID"+allLeafNodes.get(i).parentNodeID +" exists");
+			}	
+		}
+		//while the parent id list doesn't have 0 (hasn't reach the root)
+		while(!parentNodesID.contains(0)){
+			//create a new parent nodes ID arrayList to replace the original one
+			ArrayList<Integer> parentNodesID2= new ArrayList<Integer>();			
+			//iterate the whole parent id list and update each parent node
+			for(int id : parentNodesID){
+				  allNodes.get(id).x1=allNodes.get(id).childNodes.get(0).x1;
+				  allNodes.get(id).y1=allNodes.get(id).childNodes.get(0).y1;
+				  allNodes.get(id).x2=allNodes.get(id).childNodes.get(0).x2;
+				  allNodes.get(id).y2=allNodes.get(id).childNodes.get(0).y2;
+				  //update this parent node's MBR
+				  for(int j=1;j<allNodes.get(id).childNodes.size();j++){
+					  if(allNodes.get(id).childNodes.get(j).x1<allNodes.get(id).x1){
+						  allNodes.get(id).x1=allNodes.get(id).childNodes.get(j).x1;
+					  }
+					  if(allNodes.get(id).childNodes.get(j).x2>allNodes.get(id).x2){
+						  allNodes.get(id).x2=allNodes.get(id).childNodes.get(j).x2;
+					  }
+					  if(allNodes.get(id).childNodes.get(j).y1>allNodes.get(id).y1){
+						  allNodes.get(id).y1=allNodes.get(id).childNodes.get(j).y1;
+					  }
+					  if(allNodes.get(id).childNodes.get(j).y2<allNodes.get(id).y2){
+						  allNodes.get(id).y2=allNodes.get(id).childNodes.get(j).y2;
+					  }
+				  }
+				  //show its updated MBR
+				  System.out.println("Parent node ID:"+ allNodes.get(id).getID()+" x1="+allNodes.get(id).x1+" y1="+allNodes.get(id).y1+" x2="+allNodes.get(id).x2+" y2="+allNodes.get(id).y2);
+				   //if parent list doesn't have this node's parent node ID, add to the list
+				  if(!parentNodesID2.contains((allNodes.get(id).parentNodeID))){
+						parentNodesID2.add(allNodes.get(id).parentNodeID);
+				  }
+				  else{
+						System.out.println("node ID"+allNodes.get(id).parentNodeID +" exists");
+				  }
+			}
+			//delete all parent nodes ID in the original parent id list, change it to the second list
+			parentNodesID.clear();
+			parentNodesID=parentNodesID2;
+					
+		}
+	}
+	
+	
 		//Insertion
 		public static void Insertion(Node root, Point point){
 			
-			//check if the node(root) to be inserted is the leafnode
+			//check if the node(root) to be inserted is a leaf node
 			if(root.getLeaf() == true){
 				//add point to root
 				root.addPoint2Node(point);
@@ -100,9 +221,9 @@ public class Assignment1 {
 					if(root.parentNodeID==0){
 						//remove the tree root first
 						allNodes.remove(getKeyFromValue(allNodesParentID,0));
+						allNodesParentID.remove(getKeyFromValue(allNodesParentID,0));
 						
-						// create a new node replacing root with no child nodes
-						
+						// create a new node replacing root with no child nodes						
 						allNodes.put(ID, new Node(0, new ArrayList<Node>(),new ArrayList<Point>(),false,ID));
 						allNodesParentID.put(ID, 0);
 						ID=ID+1;
@@ -117,43 +238,99 @@ public class Assignment1 {
 						allNodes.get(ID-3).childNodes.add(allNodes.get(ID-2));
 						allNodes.get(ID-3).childNodes.add(allNodes.get(ID-1));
 						//allNodes.remove();
-					}else{
+					}
+					//else the 'root' which splits is a leaf but not a tree root
+					else{
+						
 						//update MBR of 
 					}
 										
 				}
 					
-				//update leaf size
-				//if this is the first point
-//				if(root.points.size() == 1){
-//					root.x1 = point.x;
-//					root.x2 = point.x;
-//					root.y1 = point.y;
-//					root.y2 = point.y;
-//				}
-//				else{
-//					for(int i=0; i<root.points.size(); i++){
-//						if(root.points.get(i).x<=root.x1){
-//							root.x1=root.points.get(i).x;
-//						}
-//						if(root.points.get(i).x>=root.x2){
-//							root.x2=root.points.get(i).x;
-//						}
-//						if(root.points.get(i).y>=root.y1){
-//							root.y1=root.points.get(i).y;
-//						}
-//						if(root.points.get(i).y<=root.y2){
-//							root.y2=root.points.get(i).y;
-//						}
-//					}
-//				}
+
 					//handle overflow function
 				
 				
-			}else
+			}else{
+			// the node(root) to be inserted is not a leaf node, which means
+			// I'm gonna to choose the subtree of it, until I find the leaf node
+			
 			//internal node
-			{
-				//Choose subtree
+			
+				//Choose subtree function
+				System.out.println("choose subtree for "+point.id);
+				//update all nodes' MBR first
+				updateAllMBR();
+				//Since this node is definitely NOT a leaf node 
+				//firstly look at its childnodes, and
+				//find the next node to be inserted in by comparing the 
+				// resulting MBRs
+				ArrayList<Node> itsChildNodes = new ArrayList<Node>();
+				itsChildNodes= root.childNodes;
+				//iterate each child node and calculate the resulting MBR, 
+				//storing the best node if it has a smaller increase of MBR perimeter
+				//calculating the first node first and store it first
+				float newX1=itsChildNodes.get(0).x1;
+				float newY1=itsChildNodes.get(0).y1;
+				float newX2=itsChildNodes.get(0).x2;
+				float newY2=itsChildNodes.get(0).y2;
+				float newPerimeter=0;
+				float minIncrease =0;
+				Node nextNode = new Node();
+				
+				if(point.x<itsChildNodes.get(0).x1){
+					newX1=point.x;
+				}
+				if(point.x>itsChildNodes.get(0).x2){
+					newX2=point.x;
+				}
+				if(point.y>itsChildNodes.get(0).y1){
+					newY1=point.y;
+				}
+				if(point.y<itsChildNodes.get(0).y2){
+					newY2=point.y;
+				}
+				//calculate MBR perimeter
+				newPerimeter=(newX2-newX1)*2+(newY1-newY2)*2;
+				minIncrease=newPerimeter-((itsChildNodes.get(0).x2-itsChildNodes.get(0).x1)*2+(itsChildNodes.get(0).y1-itsChildNodes.get(0).y2)*2);
+				System.out.println("ID:"+itsChildNodes.get(0).getID()+"'s new perimeter is "+newPerimeter);
+				System.out.println("ID:"+itsChildNodes.get(0).getID()+"'s min Increase is "+minIncrease);
+				
+				nextNode=itsChildNodes.get(0);	
+				System.out.println("next node is: "+nextNode.id);
+				
+				for(int j=1;j<itsChildNodes.size();j++){
+					newX1=itsChildNodes.get(j).x1;
+					newY1=itsChildNodes.get(j).y1;
+					newX2=itsChildNodes.get(j).x2;
+					newY2=itsChildNodes.get(j).y2;
+					
+					if(point.x<itsChildNodes.get(j).x1){
+						newX1=point.x;
+					}
+					if(point.x>itsChildNodes.get(j).x2){
+						newX2=point.x;
+					}
+					if(point.y>itsChildNodes.get(j).y1){
+						newY1=point.y;
+					}
+					if(point.y<itsChildNodes.get(j).y2){
+						newY2=point.y;
+					}
+					newPerimeter=(newX2-newX1)*2+(newY1-newY2)*2;
+					float increase=newPerimeter-((itsChildNodes.get(j).x2-itsChildNodes.get(j).x1)*2+(itsChildNodes.get(j).y1-itsChildNodes.get(j).y2)*2);
+					if(increase<minIncrease){
+						minIncrease=increase;
+						nextNode=itsChildNodes.get(j);	
+					}
+					System.out.println("ID:"+itsChildNodes.get(j).getID()+"'s new perimeter is "+newPerimeter);
+					System.out.println("ID:"+itsChildNodes.get(j).getID()+"'s min Increase is "+minIncrease);				
+					System.out.println("next node is: "+nextNode.id);
+				
+					
+				}
+				Insertion(nextNode, point);
+				
 			}
 		}
 			
@@ -280,8 +457,6 @@ public class Assignment1 {
 				System.out.println(bestS2.get(j).getId()+" "+bestS2.get(j).getX()+" "+bestS2.get(j).getY());
 			}
 
-			
-			
 			
 			
 			
