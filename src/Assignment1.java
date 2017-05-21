@@ -42,6 +42,7 @@ public class Assignment1 {
 		Point point15 = new Point(22,-15,15);
 		Point point16 = new Point(20,-17,16);
 		Point point17 = new Point(12,-17,17);
+		Point point18 = new Point(10,-15,18);
 		
 //		Node node1= new Node();
 		Node node1 = new Node(0, new ArrayList<Node>(),new ArrayList<Point>(),true,ID);
@@ -124,6 +125,13 @@ public class Assignment1 {
 			}
 		}
 		
+		//add a new point to create a THREE-LAYER R-Tree (result two overflows)
+		Insertion(allNodes.get(getKeyFromValue(allNodesParentID,0)),point18);
+		//this time should have 9 nodes
+		List<Integer> allnodesID_v2 = new ArrayList<Integer>(allNodes.keySet());
+		System.out.println("\nAll existing Nodes now (should be 9):\n"+Arrays.toString(allnodesID_v2.toArray()));
+		//show tree root id
+		System.out.println("Now the Tree root id is:"+getKeyFromValue(allNodesParentID,0));
 	}
 	
 	//used to get the HashMap value sets by giving key, used to delete nodes in parent list who have same parent
@@ -322,6 +330,7 @@ public class Assignment1 {
 				
 				// Check if its parent node overflows
 				if (parentNode.childNodes.size()>B){
+					System.out.println("********"+"Node "+root.id+"'s Parent Node "+parentNode.id+" Overflows"+"********");
 					HandleOverflow(parentNode);
 				}
 				
@@ -377,7 +386,11 @@ public class Assignment1 {
 				}
 				newRoot.childNodes.add(internalNode2);
 				ID=ID+1;
-			
+				
+				System.out.println("New node ID: "+ internalNode1.id+" and "+internalNode2.id);
+				
+
+				
 			}
 			else{
 				//This is not a root node, it's an internal node.  
@@ -406,6 +419,8 @@ public class Assignment1 {
 				//check if the node overflows
 				if(root.points.size()>B){
 					//handle overflow
+					System.out.println("********"+"Leaf Node "+root.id+ " Overflows"+"********");
+
 					HandleOverflow(root);						
 				}			
 			}else{
@@ -627,12 +642,12 @@ public class Assignment1 {
 			System.out.println("best S1 so far for X1");
 			for(int j=0;j<bestS1.size();j++){
 				
-				System.out.println("ID:"+bestS1.get(j).id+" X1"+bestS1.get(j).x1+" X2:"+bestS1.get(j).x2+" Y1:"+bestS1.get(j).y1+" Y2:"+bestS1.get(j).y2);
+				System.out.println("ID:"+bestS1.get(j).id+" X1:"+bestS1.get(j).x1+" X2:"+bestS1.get(j).x2+" Y1:"+bestS1.get(j).y1+" Y2:"+bestS1.get(j).y2);
 			}
 			System.out.println("best S2 so far for X1");
 			for(int j=0;j<bestS2.size();j++){
 				
-				System.out.println("ID:"+bestS2.get(j).id+" X1"+bestS2.get(j).x1+" X2:"+bestS2.get(j).x2+" Y1:"+bestS2.get(j).y1+" Y2:"+bestS2.get(j).y2);
+				System.out.println("ID:"+bestS2.get(j).id+" X1:"+bestS2.get(j).x1+" X2:"+bestS2.get(j).x2+" Y1:"+bestS2.get(j).y1+" Y2:"+bestS2.get(j).y2);
 			}
 			
 			
