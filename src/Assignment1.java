@@ -35,6 +35,15 @@ public class Assignment1 {
 		Point point7 = new Point(-5,-2,7);
 		Point point8 = new Point(-4,-1,8);
 		Point point9 = new Point(-4,-2,9);
+		
+		Point point10 = new Point(9,-2,10);
+		Point point11 = new Point(18,-6,11);
+		Point point12 = new Point(19,-5,12);
+		Point point13 = new Point(21,-10,13);
+		Point point14 = new Point(22,-16,14);
+		Point point15 = new Point(22,-15,15);
+		Point point16 = new Point(20,-17,16);
+		Point point17 = new Point(12,-17,17);
 //	 	create a false node whose id is 0
 //		Node node0 =new Node(-1,new ArrayList<Node>(),new ArrayList<Point>(),false,0);
 		
@@ -87,13 +96,37 @@ public class Assignment1 {
 		
 		
 		Insertion(allNodes.get(getKeyFromValue(allNodesParentID,0)),point9);
+
+		System.out.println("Node 5's points (should be 7,8,9)\n");
+		allNodes.get(5).getAllPointsId();
+		System.out.println("Node 6's points (should be 1,3,5)\n");
+		allNodes.get(6).getAllPointsId();
 		
+		//test more points until the tree root node overflows
+		Insertion(allNodes.get(getKeyFromValue(allNodesParentID,0)),point10);
+		Insertion(allNodes.get(getKeyFromValue(allNodesParentID,0)),point11);
+		Insertion(allNodes.get(getKeyFromValue(allNodesParentID,0)),point12);
+		Insertion(allNodes.get(getKeyFromValue(allNodesParentID,0)),point13);
+		Insertion(allNodes.get(getKeyFromValue(allNodesParentID,0)),point14);
+		Insertion(allNodes.get(getKeyFromValue(allNodesParentID,0)),point15);
+		Insertion(allNodes.get(getKeyFromValue(allNodesParentID,0)),point16);
+		Insertion(allNodes.get(getKeyFromValue(allNodesParentID,0)),point17);
+		
+		//there should be totally 6 nodes
+		//CORRECT Allocation of points should be
+		//2,4,6,10//7,8,9//1,3,5//11,12//13,14,15,16,17,18
 		List<Integer> allnodesID = new ArrayList<Integer>(allNodes.keySet());
 		System.out.println(Arrays.toString(allnodesID.toArray()));
-		System.out.println("Node 5's points (should be 1,3,5)\n");
-		allNodes.get(5).getAllPointsId();
-		System.out.println("Node 6's points (should be 7,8,9)\n");
-		allNodes.get(6).getAllPointsId();
+		//print all nodes' points
+		for(int i=0;i<allnodesID.size();i++){
+			if(allNodes.get(allnodesID.get(i)).points.isEmpty()){
+				System.out.println("node "+allnodesID.get(allnodesID.get(i))+"'s childnodes ");
+				allNodes.get(allnodesID.get(i)).getAllNodesId();
+			}else{
+			System.out.println("node "+allnodesID.get(i));
+			allNodes.get(allnodesID.get(i)).getAllPointsId();
+			}
+		}
 		
 	}
 	//used to get the HashMap value by giving key, used to find the node that doesn't have a parent (root)
@@ -277,7 +310,15 @@ public class Assignment1 {
 				//5 it's child nodes' parent list (no need)
 				//6 ID++
 				ID=ID+1;
-
+				
+				
+				// Check if its parent node overflows
+				if (parentNode.childNodes.size()>B){
+					HandleOverflow(parentNode);
+				}
+				
+				
+				
 			}	
 			
 		}
@@ -301,15 +342,8 @@ public class Assignment1 {
 				//check if the node overflows
 				if(root.points.size()>B){
 					//handle overflow
-					HandleOverflow(root);
-
-										
-				}
-					
-
-					//handle overflow function
-				
-				
+					HandleOverflow(root);						
+				}			
 			}else{
 			// the node(root) to be inserted is not a leaf node, which means
 			// I'm gonna to choose the subtree of it, until I find the leaf node
