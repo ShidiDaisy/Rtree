@@ -15,6 +15,7 @@ public class Assignment1 {
 	static HashMap<Integer,Node> allNodes = new HashMap<>();
 	static HashMap<Integer,Integer> allNodesParentID = new HashMap<>();
 	static int ID=1;
+	static int number_of_points=0;
 	
 	public static void main(String[] args) {
 		System.out.println("0.4B = "+zeropoint4B);
@@ -164,8 +165,49 @@ public class Assignment1 {
 				allNodes.get(key).getAllPointsId();
 			}
 		}
+		
+		
+		//perform range query
+		updateAllMBR();
+		RQuery r1= new RQuery((float) -6.5,(float) 6,(float)1.5,(float)-1.5);
+		rangeQuery(allNodes.get(getKeyFromValue(allNodesParentID,0)),r1);
+		
+		System.out.println("There are "+number_of_points+" points found");
+		
 
 	}
+	//range query main function
+	public static void rangeQuery(Node root, RQuery r){
+		System.out.println("\n***********Performing Ranger Query***********\n");
+		if(root.asLeaf==true){
+			for(int i=0;i<root.points.size();i++){
+				if(root.points.get(i).x>=r.x1 && root.points.get(i).x<=r.x2&&root.points.get(i).y>=r.y2&&root.points.get(i).y<=r.y1){
+					number_of_points=number_of_points+1;
+					//queryPoints.add(root.points.get(i));
+				}
+			}
+		}
+		else{
+			for(int j=0;j<root.childNodes.size();j++){
+				if(isIntersect(root.childNodes.get(j),r)==true){
+					rangeQuery(root.childNodes.get(j),r);
+				}
+			}
+		}
+		
+	}
+	
+	//used to check if two rectangle intersects (range query and MBR)
+	public static boolean isIntersect(Node MBR, RQuery r){
+		if((r.x2<MBR.x1)||(r.x1>MBR.x2)||(r.y2>MBR.y1)||(r.y1<MBR.y2)){
+			return false;
+		}
+		else{
+			return true;
+		}
+	}
+	
+	
 	
 	//used to get the HashMap value sets by giving key, used to delete nodes in parent list who have same parent
 	public static ArrayList<Integer> getkeySetsFromValue(HashMap<Integer,Integer> hm, int parentID){
@@ -1568,5 +1610,21 @@ public class Assignment1 {
 			
 			
 		}
+	
+
+		public static class RQuery{
+			
+			private float x1;
+			private float y1;
+			private float x2;
+			private float y2;
+			public RQuery(float x1, float y1, float x2, float y2){
+				this.x1 = x1;
+				this.y1 = y1;
+				this.x2 = x2;
+				this.y2 = y2;
+			}
+		}
 	}
 
+		
