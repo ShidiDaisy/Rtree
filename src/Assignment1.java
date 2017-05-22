@@ -367,7 +367,7 @@ public class Assignment1 {
 			twoSubInternalNodes=SplitInternal(root);
 			if(root.parentNodeID==0){
 				
-				System.out.println("\n*******Split Internal & Root Node*******");
+				System.out.println("\n*******Split Internal & Root Node with ID: "+root.id+"   *********");
 				//create a new tree root node and delete the previous one
 				//also cut all the connections of the previous root
 				//remove process
@@ -390,6 +390,8 @@ public class Assignment1 {
 				
 				//create two new nodes
 				//1 add to all nodes list
+				
+				//Node 1
 				Node internalNode1= new Node(ID-1, twoSubInternalNodes.get(0).childNodes, new ArrayList<Point>(), false,ID);
 				allNodes.put(ID, internalNode1);	
 				allNodesParentID.put(ID, ID-1);
@@ -400,6 +402,7 @@ public class Assignment1 {
 				newRoot.childNodes.add(internalNode1);
 				ID=ID+1;
 				
+				//Node 2
 				Node internalNode2 = new Node(ID-2, twoSubInternalNodes.get(1).childNodes, new ArrayList<Point>(), false,ID);
 				allNodes.put(ID, internalNode2);
 				allNodesParentID.put(ID, ID-2);
@@ -418,10 +421,82 @@ public class Assignment1 {
 			else{
 				//This is not a root node, it's an internal node.  
 				//no need to delete the root and create new root
-				System.out.println("*******Split Internal NOT Root Node*******");
+				System.out.println("\n*******Split Internal **NOT** Root Node with ID: "+root.id+"   *********");
+				
+				//1 find all nodes whose parent is this node and delete the relation
+				for(int i=0;i<root.childNodes.size();i++){
+					//reomove this ID and its value from parent HashMap
+					allNodesParentID.remove(root.childNodes.get(i).getID());
+				}
+				//find this node's parent
+				Node itsparentNode= allNodes.get(root.parentNodeID);
+				
+				//remove its childnodes' parentNodeID, will replace it later
+				//2 remove its parent's this child node
+				System.out.println("Loop this node's parent nodes");
+				for(int j=0;j<itsparentNode.childNodes.size();j++){
+					System.out.println("This node's parent's Childnode ID: "+itsparentNode.childNodes.get(j).id);
+					if(itsparentNode.childNodes.get(j).id==root.id){
+						System.out.println("is this node, remove it!");
+					}
+				}
+				//Check its parent's childnode list
+				System.out.println("Check its parent's childnode list now:");
+				itsparentNode.getAllNodesId();
+	
+				//3 remove this node's id from parent list which is (root.id,0)
+				allNodesParentID.remove(root.id);
+				
+				//4 romve this node's from AllNodes List
+				allNodes.remove(root.id);
 				
 				
 				
+				//create two new split nodes
+				
+				//Node 1
+				//1 add to all nodes list
+				Node internalNode1= new Node(itsparentNode.id, twoSubInternalNodes.get(0).childNodes, new ArrayList<Point>(), false,ID);
+				allNodes.put(ID, internalNode1);
+				
+				//2 add itself to all nodes parent id list
+				allNodesParentID.put(ID, itsparentNode.id);
+				
+				//3 add its child nodes to all nodes parent id list, and change their parent node id
+				for(int j=0;j<internalNode1.childNodes.size();j++){
+					//change their parent node id
+					System.out.println("Change node: "+internalNode1.childNodes.get(j).id+"'s parent node id from "+internalNode1.childNodes.get(j).parentNodeID+" to "+internalNode1.id);
+					internalNode1.childNodes.get(j).parentNodeID=internalNode1.id;
+					System.out.println("Also change parent id in parent id HashMap");
+					allNodesParentID.put(internalNode1.childNodes.get(j).id, internalNode1.id);
+				}
+				//4 add this new node to it's parent node's child node
+				itsparentNode.childNodes.add(internalNode1);
+				
+				ID=ID+1;
+				
+				
+				
+				//Node 2
+				//1 add to all nodes list
+				Node internalNode2= new Node(itsparentNode.id, twoSubInternalNodes.get(1).childNodes, new ArrayList<Point>(), false,ID);
+				allNodes.put(ID, internalNode2);
+				
+				//2 add itself to all nodes parent id list
+				allNodesParentID.put(ID, itsparentNode.id);
+				
+				//3 add its child nodes to all nodes parent id list, and change their parent node id
+				for(int j=0;j<internalNode2.childNodes.size();j++){
+					//change their parent node id
+					System.out.println("Change node: "+internalNode2.childNodes.get(j).id+"'s parent node id from "+internalNode2.childNodes.get(j).parentNodeID+" to "+internalNode2.id);
+					internalNode2.childNodes.get(j).parentNodeID=internalNode2.id;
+					System.out.println("Also change parent id in parent id HashMap");
+					allNodesParentID.put(internalNode2.childNodes.get(j).id, internalNode2.id);
+				}
+				//4 add this new node to it's parent node's child node
+				itsparentNode.childNodes.add(internalNode2);
+				
+				ID=ID+1;
 			}
 			
 		}
