@@ -933,36 +933,133 @@ public class Assignment1 {
 
 			
 			
+			
+			
+			
 			//Calculate the smallest perimeter on sorted UP boundaries of MBRs on Y dimensions (Y1)
+			//Calculate the smallest down boundaries of MBRs on Y dimensions (Y2)
+			//******************//duplicate the following 
+			
+			//sort the points by Y upper boundaries values (Y1), so don't know lower bound Y2
+			ArrayList<Node> sortedY1Node= internalnode.childNodes;
+			Collections.sort(sortedY1Node, new Comparator<Node>(){
+				public int compare(Node node1, Node node2){
+					int result =Float.compare(node1.y1, node2.y1);
+					return result;
+				}
+			});
+			System.out.println("********Sorted nodes based on Y1 (upper boundaries)*********");
+			for(int i=0;i<sortedY1Node.size();i++){			
+				System.out.println("ID:"+sortedY1Node.get(i).id+" X1:"+sortedY1Node.get(i).x1+" X2:"+sortedY1Node.get(i).x2+" Y1:"+sortedY1Node.get(i).y1+" Y2:"+sortedY1Node.get(i).y2);
+			}
 			
 			
+			//calculate the perimeter sum of MBR(S1Y1) and MBR(S2Y1); 
+			//record it if this is the best split so far
+			for(int i=zeropoint4B;i<=B-zeropoint4B+1;i++){
+				ArrayList<Node> S1Y1=new ArrayList<Node>();
+				ArrayList<Node> S2Y1=new ArrayList<Node>();
+				
+				for(int j=0;j<i;j++){
+					S1Y1.add(sortedY1Node.get(j));
+				}
+				for(int j=i;j<(B+1);j++){
+					S2Y1.add(sortedY1Node.get(j));
+				}
+				System.out.println("\nS1Y1 this round nodes");
+				for(int j=0;j<S1Y1.size();j++){
+					
+					System.out.println("ID:"+S1Y1.get(j).id+" X1:"+S1Y1.get(j).x1+" X2:"+S1Y1.get(j).x2+" Y1:"+S1Y1.get(j).y1+" Y2:"+S1Y1.get(j).y2);
+				}
+				System.out.println("\nS2Y1 this round nodes");
+				for(int j=0;j<S2Y1.size();j++){
+
+					System.out.println("ID:"+S2Y1.get(j).id+" X1:"+S2Y1.get(j).x1+" X2:"+S2Y1.get(j).x2+" Y1:"+S2Y1.get(j).y1+" Y2:"+S2Y1.get(j).y2);
+					
+				}
+				
+				//Since y1 is sorted, find the ***y2***,x1, x2 value of the MBR
+				//why find y2, because it's not certain that the last node with largest y1
+				//will also have the largest y2 as well
+				//store the first node's X1 X2 in S1Y1 to be the smallest/largest y value at first
+				//store the first node's Y2 in S1Y1
+				float minXS1Y1=S1Y1.get(0).x1;
+				float maxXS1Y1=S1Y1.get(0).x2;
+				float minY2_S1Y1=S1Y1.get(0).y2;
+				
+				//since x2 is the max x for each node's MBR, only need to look at x2 for all 
+				//nodes in S1Y2 to get the maximum x
+				//Same as x1
+				for (int j=0;j<S1Y1.size();j++){
+					if(S1Y1.get(j).x1<=minXS1Y1){
+						minXS1Y1=S1Y1.get(j).x1;
+					}
+					if(S1Y1.get(j).x2>=maxXS1Y1){
+						maxXS1Y1=S1Y1.get(j).x2;
+					}
+					if(S1Y1.get(j).y2<=minY2_S1Y1){
+						minY2_S1Y1=S1Y1.get(j).y2;
+					}
+				}
+				System.out.println("min X S1Y1: "+minXS1Y1);
+				System.out.println("max X S1Y1: "+maxXS1Y1);
+				System.out.println("min Y2 S1Y1: "+minY2_S1Y1);
+				System.out.println("max Y1 S1Y1: "+S1Y1.get(S1Y1.size()-1).y1);
+
+				
+				//store the first node's X1 X2 in S2Y1 to be the smallest/largest y value at first
+				//store the first node's Y2 in S2Y1
+				float minXS2Y1=S2Y1.get(0).x1;
+				float maxXS2Y1=S2Y1.get(0).x2;
+				float minY2_S2Y1=S2Y1.get(0).y2;
+				
+				//since x2 is the max x for each node's MBR, only need to look at x2 for all 
+				//nodes in S2Y2 to get the maximum x
+				//Same as x1
+				for (int j=0;j<S2Y1.size();j++){
+					if(S2Y1.get(j).x1<=minXS2Y1){
+						minXS2Y1=S2Y1.get(j).x1;
+					}
+					if(S2Y1.get(j).x2>=maxXS2Y1){
+						maxXS2Y1=S2Y1.get(j).x2;
+					}
+					if(S2Y1.get(j).y2<=minY2_S2Y1){
+						minY2_S2Y1=S2Y1.get(j).y2;
+					}
+				}
+				System.out.println("min X S2Y1: "+minXS2Y1);
+				System.out.println("max X S2Y1: "+maxXS2Y1);
+				System.out.println("min Y2 S2Y1: "+minY2_S2Y1);
+				System.out.println("max Y1 S2Y1: "+S2Y1.get(S2Y1.size()-1).y1);
+
+				
+				float perimeterS1Y1=(maxXS1Y1 - minXS1Y1)*2+(S1Y1.get(S1Y1.size()-1).y1 - minY2_S1Y1)*2;
+				float perimeterS2Y1=(maxXS2Y1 - minXS2Y1)*2+(S2Y1.get(S2Y1.size()-1).y1 - minY2_S2Y1)*2;
+				float totalPerimeterY1=perimeterS1Y1+perimeterS2Y1;
+				
+				System.out.println("total perimeter on Y1: "+totalPerimeterY1);
+											
+				if(totalPerimeterY1<=smallestPerimeter){
+						smallestPerimeter=totalPerimeterY1;
+						bestS1=S1Y1;
+						bestS2=S2Y1;
+				}
+									
+			}
 			
 			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
+			//Testing Print Lines on Y1
+			System.out.println("\nsmallest perimeter now (X1,X2,Y2,Y1): "+smallestPerimeter);
+			System.out.println("best S1 nodes so far for X1,X2,Y2,Y1");
+			for(int j=0;j<bestS1.size();j++){
+				
+				System.out.println("ID:"+bestS1.get(j).id+" X1:"+bestS1.get(j).x1+" X2:"+bestS1.get(j).x2+" Y1:"+bestS1.get(j).y1+" Y2:"+bestS1.get(j).y2);
+			}
+			System.out.println("best S2 nodes so far for X1,X2,Y2,Y1");
+			for(int j=0;j<bestS2.size();j++){
+				
+				System.out.println("ID:"+bestS2.get(j).id+" X1:"+bestS2.get(j).x1+" X2:"+bestS2.get(j).x2+" Y1:"+bestS2.get(j).y1+" Y2:"+bestS2.get(j).y2);
+			}
 			
 			
 			newInternalNode1.childNodes=bestS1;
