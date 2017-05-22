@@ -43,6 +43,10 @@ public class Assignment1 {
 		Point point16 = new Point(20,-17,16);
 		Point point17 = new Point(12,-17,17);
 		Point point18 = new Point(10,-15,18);
+		Point point19 = new Point(6,-5,19);
+		Point point20 = new Point(7,-7,20);
+		Point point21 = new Point(2,-8,21);
+		Point point22 = new Point(11,0,22);
 		
 //		Node node1= new Node();
 		Node node1 = new Node(0, new ArrayList<Node>(),new ArrayList<Point>(),true,ID);
@@ -134,10 +138,23 @@ public class Assignment1 {
 		System.out.println("Now the Tree root id is:"+getKeyFromValue(allNodesParentID,0));
 		
 		
+		Insertion(allNodes.get(getKeyFromValue(allNodesParentID,0)),point19);
+		Insertion(allNodes.get(getKeyFromValue(allNodesParentID,0)),point20);
+		Insertion(allNodes.get(getKeyFromValue(allNodesParentID,0)),point21);
+		Insertion(allNodes.get(getKeyFromValue(allNodesParentID,0)),point22);
 		//print all node parents list
 		for (Integer key : allNodesParentID.keySet()) {
 		    System.out.println("The node with ID: "+key + "'s parent is node with ID: " + allNodesParentID.get(key));
 		}
+		//print all leaf node's points
+		for (Integer key : allNodes.keySet()){
+			if(allNodes.get(key).asLeaf==true){
+				System.out.println("The points in Leaf Node ID: "+allNodes.get(key).id);
+				allNodes.get(key).getAllPointsId();
+			}
+		}
+		
+		
 	}
 	
 	//used to get the HashMap value sets by giving key, used to delete nodes in parent list who have same parent
@@ -336,7 +353,7 @@ public class Assignment1 {
 				
 				// Check if its parent node overflows
 				if (parentNode.childNodes.size()>B){
-					System.out.println("********"+"Node "+root.id+"'s Parent Node "+parentNode.id+" Overflows"+"********");
+					System.out.println("********"+"Leaf Node "+root.id+"'s Parent Node "+parentNode.id+" Overflows"+"********");
 					HandleOverflow(parentNode);
 				}
 				
@@ -513,6 +530,8 @@ public class Assignment1 {
 				
 			}
 		}
+
+		
 		//Split 1) Internal 2)Root but not leaf Node	
 		public static ArrayList<Node> SplitInternal(Node internalnode){
 			// this node must have child nodes, split it into two internal nodes.
@@ -787,23 +806,6 @@ public class Assignment1 {
 	
 			
 			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-
 			
 			
 			
@@ -1299,8 +1301,7 @@ public class Assignment1 {
 		}
 		
 		
-		
-		
+
 		//Node Class (rectangle)
 		public static class Node{
 			private float x1;
