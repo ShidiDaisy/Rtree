@@ -47,6 +47,9 @@ public class Assignment1 {
 		Point point20 = new Point(7,-7,20);
 		Point point21 = new Point(2,-8,21);
 		Point point22 = new Point(11,0,22);
+		Point point23 = new Point(-8,-4,23);
+		Point point24 = new Point(-7,1,24);
+		Point point25 = new Point(-6,-1,25);
 		
 //		Node node1= new Node();
 		Node node1 = new Node(0, new ArrayList<Node>(),new ArrayList<Point>(),true,ID);
@@ -142,10 +145,18 @@ public class Assignment1 {
 		Insertion(allNodes.get(getKeyFromValue(allNodesParentID,0)),point20);
 		Insertion(allNodes.get(getKeyFromValue(allNodesParentID,0)),point21);
 		Insertion(allNodes.get(getKeyFromValue(allNodesParentID,0)),point22);
+		Insertion(allNodes.get(getKeyFromValue(allNodesParentID,0)),point23);
+		Insertion(allNodes.get(getKeyFromValue(allNodesParentID,0)),point24);
+		Insertion(allNodes.get(getKeyFromValue(allNodesParentID,0)),point25);
+		
+		System.out.println("\n************Summary**************\n");
 		//print all node parents list
+		System.out.println("*********print all nodes' parents*********");
 		for (Integer key : allNodesParentID.keySet()) {
 		    System.out.println("The node with ID: "+key + "'s parent is node with ID: " + allNodesParentID.get(key));
 		}
+		
+		System.out.println("\n*********print all leaf node's points*********");
 		//print all leaf node's points
 		for (Integer key : allNodes.keySet()){
 			if(allNodes.get(key).asLeaf==true){
@@ -153,8 +164,7 @@ public class Assignment1 {
 				allNodes.get(key).getAllPointsId();
 			}
 		}
-		
-		
+
 	}
 	
 	//used to get the HashMap value sets by giving key, used to delete nodes in parent list who have same parent
@@ -190,6 +200,8 @@ public class Assignment1 {
 	
 	//Update all nodes' MBR (x1,y1,x2,y2) to be able to locate the insert point.
 	public static void updateAllMBR(){
+		System.out.println("\n**********Update All MBR function called**********\n");
+		
 		//get all leafnodes and put
 		ArrayList<Node> allLeafNodes = new ArrayList<Node>();
 		for (Integer key : allNodes.keySet()) {
@@ -274,8 +286,9 @@ public class Assignment1 {
 			//delete all parent nodes ID in the original parent id list, change it to the second list
 			parentNodesID.clear();
 			parentNodesID=parentNodesID2;
-					
+
 		}
+		 System.out.println("\n**********Update MBR ends***********\n");
 	}
 	
 	
@@ -292,6 +305,7 @@ public class Assignment1 {
 			twoSubLeafNodes=SplitLeaf(root);	
 			
 			if(root.parentNodeID==0){
+				System.out.println("\n************** Handle Overflow for Leaf & Root Starts**************\n");
 				//remove the tree root first !!!!!should be two hashmaps all nodes+parent lists
 				allNodes.remove(getKeyFromValue(allNodesParentID,0));
 				allNodesParentID.remove(getKeyFromValue(allNodesParentID,0));
@@ -310,10 +324,14 @@ public class Assignment1 {
 				//add two nodes to their parent node's child node list							
 				allNodes.get(ID-3).childNodes.add(allNodes.get(ID-2));
 				allNodes.get(ID-3).childNodes.add(allNodes.get(ID-1));
+				
+				System.out.println("\n************** Handle Overflow Ends**************\n");
 			}
 			else{
 				//this node has a parent (parentNodeID!=0)
 				//get this node's parent
+				System.out.println("\n************** Handle Overflow on Leaf Not Root Starts**************\n");
+				
 				Node parentNode = allNodes.get((root.parentNodeID));
 				
 				//*********Remove this node***************
@@ -350,15 +368,13 @@ public class Assignment1 {
 				//6 ID++
 				ID=ID+1;
 				
-				
+				System.out.println("\n************** Handle Overflows Ends**************\n");
 				// Check if its parent node overflows
 				if (parentNode.childNodes.size()>B){
 					System.out.println("********"+"Leaf Node "+root.id+"'s Parent Node "+parentNode.id+" Overflows"+"********");
 					HandleOverflow(parentNode);
 				}
-				
-				
-				
+	
 			}	
 			
 		}
@@ -367,7 +383,7 @@ public class Assignment1 {
 			twoSubInternalNodes=SplitInternal(root);
 			if(root.parentNodeID==0){
 				
-				System.out.println("\n*******Split Internal & Root Node with ID: "+root.id+"   *********");
+				System.out.println("\n*******Handle Internal & Root Node Overflow with ID: "+root.id+"  Starts *********\n");
 				//create a new tree root node and delete the previous one
 				//also cut all the connections of the previous root
 				//remove process
@@ -414,14 +430,17 @@ public class Assignment1 {
 				ID=ID+1;
 				
 				System.out.println("New node ID: "+ internalNode1.id+" and "+internalNode2.id);
-				
+				System.out.println("\n*******Handle Internal & Root Node Overflow Ends*********\n");
+
 
 				
 			}
 			else{
+				System.out.println("\n***********Handle Internal Not Root Overflow with ID" +root.id+" Starts ************\n");
+
 				//This is not a root node, it's an internal node.  
 				//no need to delete the root and create new root
-				System.out.println("\n*******Split Internal **NOT** Root Node with ID: "+root.id+"   *********");
+				
 				
 				//1 find all nodes whose parent is this node and delete the relation
 				for(int i=0;i<root.childNodes.size();i++){
@@ -437,17 +456,18 @@ public class Assignment1 {
 				for(int j=0;j<itsparentNode.childNodes.size();j++){
 					System.out.println("This node's parent's Childnode ID: "+itsparentNode.childNodes.get(j).id);
 					if(itsparentNode.childNodes.get(j).id==root.id){
-						System.out.println("is this node, remove it!");
+						System.out.println(itsparentNode.childNodes.get(j).id+" is this node, remove it!");
+						itsparentNode.childNodes.remove(itsparentNode.childNodes.get(j));
 					}
 				}
-				//Check its parent's childnode list
+				//Check its parent's child nodes list
 				System.out.println("Check its parent's childnode list now:");
 				itsparentNode.getAllNodesId();
 	
 				//3 remove this node's id from parent list which is (root.id,0)
 				allNodesParentID.remove(root.id);
 				
-				//4 romve this node's from AllNodes List
+				//4 remove this node's from AllNodes List
 				allNodes.remove(root.id);
 				
 				
@@ -497,6 +517,18 @@ public class Assignment1 {
 				itsparentNode.childNodes.add(internalNode2);
 				
 				ID=ID+1;
+				
+				
+				
+				System.out.println("\nNew node ID: "+ internalNode1.id+" and "+internalNode2.id);
+				
+				System.out.println("\n***********Handle Internal Not Root Overflow Ends************\n");
+				
+				// Check if its parent node overflows
+				if (itsparentNode.childNodes.size()>B){
+					System.out.println("********"+"This Internal Node's Parent Node "+itsparentNode.id+" Overflows"+"********");
+					HandleOverflow(itsparentNode);
+				}
 			}
 			
 		}
@@ -508,7 +540,7 @@ public class Assignment1 {
 	
 		//Insertion
 		public static void Insertion(Node root, Point point){
-			
+			 System.out.println("\n**********Insertion for point ID "+point.id+"************\n");
 			//check if the node(root) to be inserted is a leaf node
 			if(root.getLeaf() == true){
 				//add point to root
@@ -601,6 +633,8 @@ public class Assignment1 {
 				
 					
 				}
+				System.out.println("\n**********Insertion Ends************\n");
+
 				Insertion(nextNode, point);
 				
 			}
@@ -609,6 +643,8 @@ public class Assignment1 {
 		
 		//Split 1) Internal 2)Root but not leaf Node	
 		public static ArrayList<Node> SplitInternal(Node internalnode){
+			 System.out.println("\n**********Split Internal Node ID "+internalnode.id+" Starts ************\n");
+
 			// this node must have child nodes, split it into two internal nodes.
 			
 			// initiate the smallest perimeter to be a negative integer
@@ -749,10 +785,6 @@ public class Assignment1 {
 				
 				System.out.println("ID:"+bestS2.get(j).id+" X1:"+bestS2.get(j).x1+" X2:"+bestS2.get(j).x2+" Y1:"+bestS2.get(j).y1+" Y2:"+bestS2.get(j).y2);
 			}
-
-
-			
-			
 			
 			
 			
@@ -1143,14 +1175,20 @@ public class Assignment1 {
 			newInternalNode2.childNodes=bestS2;
 			twoNodesResult.add(newInternalNode1);
 			twoNodesResult.add(newInternalNode2);		
+			
+			System.out.println("\n************** Split Internal Node Ends**************\n");
+			
 			return twoNodesResult;
+
+			
 		}
 		
 		
 		
 		//Split Leaf Node
 		public static ArrayList<Node> SplitLeaf(Node leafnode){
-			
+			 System.out.println("\n**********Split Leaf Node ID "+leafnode.id+" Starts ************\n");
+
 			// initiate the smallest perimeter to be a negative integer
 			float smallestPerimeter=-1;
 			// initiate the best split Set S1 and S2
@@ -1372,6 +1410,9 @@ public class Assignment1 {
 			newLeafNode2.points=bestS2;
 			twoNodesResult.add(newLeafNode1);
 			twoNodesResult.add(newLeafNode2);		
+			
+			System.out.println("\n************** Split Leaf Node Ends**************\n");
+			
 			return twoNodesResult;
 		}
 		
