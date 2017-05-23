@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -16,12 +15,12 @@ public class Query {
 	
 	//Map: (MBR(Node), mindist)
 	static HashMap<Rtree.Node, Double> listH = new HashMap<Rtree.Node, Double>(); 
-	static Rtree.Point NN = new Rtree.Point();
+	static ArrayList<Rtree.Point> NN = new ArrayList<Rtree.Point>();
 	static double nnDist = 0;
 	static HashMap<Integer,Double> result = new HashMap<Integer,Double>();
+	static double lowestDist = Double.POSITIVE_INFINITY;
 	
 	public static void main(String[] args) {
-		Rtree rtree = new Rtree();
 		//Return Tree root: parentnode.id = 0
 		//Nodes (hashmap)
 		//Parent Nodes (hashmap)
@@ -87,16 +86,19 @@ public class Query {
 		Rtree.Point p7 = new Rtree.Point(3,6,501);
 		Rtree.Point p8 = new Rtree.Point(4,3,502);
 		Rtree.Point p9 = new Rtree.Point(5,2,503);
+		Rtree.Point p11 = new Rtree.Point(3,4,504);
+		Rtree.Point p10 = new Rtree.Point(6,2,505);
 		
 		r3.points.add(p7);
 		r3.points.add(p8);
 		r3.points.add(p9);
+		r3.points.add(p11);
+		r4.points.add(p10);
 		
-		Rtree.Point q = new Rtree.Point(2,6,500);
+		Rtree.Point q = new Rtree.Point(5.5f,2,500);
 		
 		//Main
 		getMindist(q,root); //Access root
-		//System.out.println(Arrays.asList(listH));
 		HashMap<Integer, Double> nn = NNSearch(q);
 		System.out.println(nn);
 	}
@@ -104,7 +106,7 @@ public class Query {
 	public static HashMap<Integer, Double> NNSearch(Rtree.Point q){
 		double ppDist = Double.POSITIVE_INFINITY;
 		double thisPpDist = 0;
-		Rtree.Point curNN = new Rtree.Point();
+		ArrayList<Rtree.Point> curNN = new ArrayList<Rtree.Point>();
 		
 		//Access the first child in listH
 		Rtree.Node u = new Rtree.Node();
@@ -116,33 +118,43 @@ public class Query {
 		//If u is an intermediate node
 		if(u.asLeaf == false){
 			getMindist(q,u);
-			System.out.println(Arrays.asList(listH));
+			//System.out.println(Arrays.asList(listH));
 			NNSearch(q);
 
 		}else{ //leaf node
-			//Get the points in this leaf node
+			//Get the lowest value in listH
+			double nextHVal = listH.values().iterator().next();
+			//System.out.println(lowestMindist);
+			
+			//Get the closest points in this leaf node
 			for(Rtree.Point point:u.points){
 				thisPpDist = Math.sqrt(Math.pow(point.getX() - q.getX(), 2) + Math.pow(point.getY() - q.getY(), 2));
 				if(thisPpDist < ppDist){
 					ppDist = thisPpDist;
-					curNN = point;
+					curNN = new ArrayList<Rtree.Point>();
+					curNN.add(point);
+				}else if(thisPpDist == ppDist){
+					curNN.add(point);
 				}
 			}
 			
-			//Get the lowest value in listH
-			double lowestMindist = listH.values().iterator().next();
-			//System.out.println(lowestMindist);
-			
-			if(ppDist < lowestMindist){
+			if(ppDist < nextHVal){
 				//NN found
-				nnDist = ppDist; 
-				NN = curNN;
+				NN.addAll(curNN);
+				nnDist = ppDist;
+			}else if(ppDist == nextHVal){
+				//Search next node
+				NN.addAll(curNN);
+				NNSearch(q);
 			}else{
 				NNSearch(q);
 			}
 		}
 		
-		result.put(NN.getId(), nnDist);
+		for(Rtree.Point nn:NN){
+			result.put(nn.getId(), nnDist);
+		}
+		
 		return result;
 	}
 	
@@ -194,8 +206,9 @@ public class Query {
 		listH = sortByValues(listH);
 	}
 	
-	private static HashMap<Rtree.Node, Double> sortByValues(HashMap map) { 
-	       List list = new LinkedList(map.entrySet());
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private static HashMap<Rtree.Node, Double> sortByValues(HashMap<Rtree.Node, Double> map) { 
+		List list = new LinkedList(map.entrySet());
 	       // Defined Custom Comparator here
 	       Collections.sort(list, new Comparator() {
 	            public int compare(Object o1, Object o2) {
@@ -204,8 +217,6 @@ public class Query {
 	            }
 	       });
 
-	       // Here I am copying the sorted list in HashMap
-	       // using LinkedHashMap to preserve the insertion order
 	       HashMap sortedHashMap = new LinkedHashMap();
 	       for (Iterator it = list.iterator(); it.hasNext();) {
 	              Map.Entry entry = (Map.Entry) it.next();
