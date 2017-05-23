@@ -171,6 +171,11 @@ public class Rtree {
 		Insertion(allNodes.get(getKeyFromValue(allNodesParentID,0)),point24);
 		Insertion(allNodes.get(getKeyFromValue(allNodesParentID,0)),point25);
 		
+		for(int i =26;i<=100;i++){
+			Insertion(allNodes.get(getKeyFromValue(allNodesParentID,0)),new Point((float) Math.random()*100,(float) Math.random()*100,i));
+		}
+			
+		
 		System.out.println("\n************Summary**************\n");
 		//print all node parents list
 		System.out.println("*********print all nodes' parents*********");
@@ -220,7 +225,7 @@ public class Rtree {
 		
 		long startTimeN = System.currentTimeMillis();
 		//Perform nn query
-		Rtree.Point q = new Rtree.Point((float) -4.51,(float) -1.5);
+		Rtree.Point q = new Rtree.Point((float) 22,(float) -15.5);
 		updateAllMBR();
 		getMindist(q,allNodes.get(getKeyFromValue(allNodesParentID,0))); //Access root
 		NNSearch(q);
