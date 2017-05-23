@@ -23,16 +23,22 @@ public class Rtree {
 	//r query initials:
 	static int number_of_points=0;
 	
-	
-	
+
 	//nn query initials:
 	static HashMap<Rtree.Node, Double> listH = new HashMap<Rtree.Node, Double>(); 
 	static ArrayList<Rtree.Point> NN = new ArrayList<Rtree.Point>();
 	static double nnDist = 0;
 	static HashMap<Integer,Double> result = new HashMap<Integer,Double>();
 	static double lowestDist = Double.POSITIVE_INFINITY;
+	static double finalDist;
+	
+	
+
 	
 	public static void main(String[] args) {
+		long startTime = System.currentTimeMillis();
+		
+	
 		System.out.println("0.4B = "+zeropoint4B);
 		//A list containing all nodes
 		
@@ -180,8 +186,15 @@ public class Rtree {
 				allNodes.get(key).getAllPointsId();
 			}
 		}
+		long endTime   = System.currentTimeMillis();
+		long totalTime = endTime - startTime;
 		
 		
+		
+		
+		
+		
+		long startTimeR = System.currentTimeMillis();
 		//perform range query
 		updateAllMBR();
 		RQuery r1= new RQuery((float) -6.5,(float) 6,(float)1.5,(float)-1.5);
@@ -193,18 +206,38 @@ public class Rtree {
 //		System.out.println("\n**********test mindist***********\n");
 //		float mindistance= mindist(new NNQuery(2,2), allNodes.get(6));
 //		System.out.println("Mindist is "+mindistance);
+		long endTimeR   = System.currentTimeMillis();
+		long totalTimeR = endTimeR - startTimeR;
 		
-		Rtree.Point q = new Rtree.Point((float) -4.5,(float) -1.5);
 		
+		
+		
+		
+		
+		
+		
+		
+		
+		long startTimeN = System.currentTimeMillis();
 		//Perform nn query
+		Rtree.Point q = new Rtree.Point((float) -4.51,(float) -1.5);
 		updateAllMBR();
 		getMindist(q,allNodes.get(getKeyFromValue(allNodesParentID,0))); //Access root
-		HashMap<Integer, Double> nn = NNSearch(q);
-		listH.clear();		
-		System.out.println("\n***********NN result: The id of point(s)***********\n"+ nn);
-		nn.clear();
+		NNSearch(q);
+		listH.clear();	
+		System.out.println("\n***********NN result: The id of point(s)***********\n");
+		for(int j=0;j<NN.size();j++){
+			
+			System.out.println(NN.get(j).id);
+
+		}
+		NN.clear();
+		long endTimeN   = System.currentTimeMillis();
+		long totalTimeN = endTimeN - startTimeN;
 		
-		
+		System.out.println("Sequential Scan Benchmark (ms): "+totalTime);
+		System.out.println("One Range Query time (ms): "+totalTimeR);
+		System.out.println("One NN Query time (ms): "+totalTimeN);
 	}
 	//range query main function
 	public static void rangeQuery(Node root, RQuery r){
@@ -1696,18 +1729,20 @@ public class Rtree {
 			}
 		}
 	
-//		public static class NNQuery{
+//		public static class NNPoint{
 //			private float x;
 //			private float y;
-//			public NNQuery(float x, float y){
+//			private int id
+//			public NNQuery(float x, float y, int id){
 //				this.x = x;
-//				this.y = y;				
+//				this.y = y;	
+//				this.id=id
 //			}
 //		}
 		
 		
 		
-		public static HashMap<Integer, Double> NNSearch(Rtree.Point q){
+		public static void NNSearch(Rtree.Point q){
 			double ppDist = Double.POSITIVE_INFINITY;
 			double thisPpDist = 0;
 			ArrayList<Rtree.Point> curNN = new ArrayList<Rtree.Point>();
@@ -1746,20 +1781,28 @@ public class Rtree {
 					//NN found
 					NN.addAll(curNN);
 					nnDist = ppDist;
-				}else if(ppDist == nextHVal){
-					//Search next node
-					NN.addAll(curNN);
-					NNSearch(q);
 				}else{
-					NNSearch(q);
+					NN.addAll(curNN);
+					NNSearch(q);			
 				}
 			}
 			
-			for(Rtree.Point nn:NN){
-				result.put(nn.getId(), nnDist);
+			finalDist=Math.sqrt(Math.pow(NN.get(0).getX() - q.getX(), 2) + Math.pow(NN.get(0).getY() - q.getY(), 2));
+			for(int j=1;j<NN.size();j++){
+				double thisDist=Math.sqrt(Math.pow(NN.get(j).getX() - q.getX(), 2) + Math.pow(NN.get(j).getY() - q.getY(), 2));
+				if(thisDist<finalDist){
+					for(int k=0;k<j;k++){
+						NN.remove(NN.get(k));
+					}
+				}
+				else if(thisDist>finalDist){
+					NN.remove(NN.get(j));
+				}
+				
 			}
 			
-			return result;
+			
+			
 		}
 		
 		public static void getMindist(Rtree.Point q, Rtree.Node node){
