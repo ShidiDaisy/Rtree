@@ -8,7 +8,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.PriorityQueue;
 import java.util.stream.Collectors;
 
@@ -16,11 +15,8 @@ public class Rtree {
     
     private final static int B = 100;
     private final static int zeropoint4B=(int) Math.ceil(0.4*B);
-    //static ArrayList<Node> nodeList = new ArrayList<Node>();
-    //static ArrayList<Node> allNodes=new ArrayList<Node>();
     
     static ArrayList<Point> allPoints= new ArrayList<Point>();
-    
     static HashMap<Integer,Node> allNodes = new HashMap<>();
     static HashMap<Integer,Integer> allNodesParentID = new HashMap<>();
     static int ID=1;
@@ -32,15 +28,13 @@ public class Rtree {
     
     
     //nn query initials:
-    static HashMap<Rtree.Node, Double> listH = new HashMap<Rtree.Node, Double>();
+    static Comparator<Entry> comparator = new MindistComparator();
+    static PriorityQueue<Entry> listH = new PriorityQueue<Entry>(10, comparator);
     static ArrayList<Rtree.Point> NN = new ArrayList<Rtree.Point>();
     static double nnDist = 0;
     static HashMap<Integer,Double> result = new HashMap<Integer,Double>();
     static double lowestDist = Double.POSITIVE_INFINITY;
     static double finalDist;
-    
-    
-    
     
     public static void main(String[] args) {
         
@@ -178,7 +172,7 @@ public class Rtree {
         Insertion(allNodes.get(getKeyFromValue(allNodesParentID,0)),point24);
         Insertion(allNodes.get(getKeyFromValue(allNodesParentID,0)),point25);
         
-        for(int i =26;i<=1000;i++){
+        for(int i =26;i<=2000;i++){
             Insertion(allNodes.get(getKeyFromValue(allNodesParentID,0)),new Point((float) Math.random()*1000,(float) Math.random()*1000,i));
         }
         
@@ -229,13 +223,16 @@ public class Rtree {
         
         
         
-        
-        long startTimeN = System.nanoTime();
-        Rtree.Point q = new Rtree.Point((float) -4.5,(float) -1.5);
+   
+        long startTimeN1 = System.nanoTime();
+        Rtree.Point q = new Rtree.Point((float) -30,(float) -1.5);
         Node treeroot=allNodes.get(getKeyFromValue(allNodesParentID,0));
-        getMindist(q,treeroot); //Access root
-        //Perform nn query
         
+        getMindist(q,treeroot); //Access root
+        long endTimeN1   = System.nanoTime();
+        long totalTimeN1 = endTimeN1 - startTimeN1;
+        //Perform nn query
+        long startTimeN = System.nanoTime();
         NNSearch(q);
         listH.clear();
         System.out.println("\n***********NN result: The id of point(s)***********\n");
@@ -246,7 +243,7 @@ public class Rtree {
         }
         NN.clear();
         long endTimeN   = System.nanoTime();
-        long totalTimeN = endTimeN - startTimeN;
+        long totalTimeN = endTimeN - startTimeN+totalTimeN1;
         
         
         
@@ -1814,17 +1811,25 @@ public class Rtree {
         }
     }
     
-    //		public static class NNPoint{
-    //			private float x;
-    //			private float y;
-    //			private int id
-    //			public NNQuery(float x, float y, int id){
-    //				this.x = x;
-    //				this.y = y;	
-    //				this.id=id
-    //			}
-    //		}
-    
+    //listH entry
+    public static class Entry{
+    	private Node node;
+    	private Double mindist;
+    	
+    	public Entry(Node node, Double mindist){
+    		this.node = node;
+    		this.setMindist(mindist);
+    	}
+
+
+		public void setMindist(Double mindist) {
+			this.mindist = mindist;
+		}
+
+		public Double getMindist() {
+			return mindist;
+		}
+    }
     
     
     public static void NNSearch(Rtree.Point q){
@@ -1834,10 +1839,7 @@ public class Rtree {
         
         //Access the first child in listH
         Rtree.Node u = new Rtree.Node();
-        u = listH.keySet().iterator().next();
-        
-        //Remove the first child in listH
-        listH.remove(u);
+        u = listH.poll().node;//??
         
         //If u is an intermediate node
         if(u.asLeaf == false){
@@ -1847,7 +1849,7 @@ public class Rtree {
             
         }else{ //leaf node
             //Get the lowest value in listH
-            double nextHVal = listH.values().iterator().next();
+            double nextHVal = listH.peek().getMindist();
             //System.out.println(lowestMindist);
             
             //Get the closest points in this leaf node
@@ -1931,12 +1933,8 @@ public class Rtree {
                 System.out.println("Error 4.");
             } 
             //childnode, mindist
-            listH.put(n, mindist);
+            listH.add(new Entry(n,mindist));
         }
-        
-        //Sort the map according to the mindist
-        
-        listH = sortByValues(listH);
     }
     
     
