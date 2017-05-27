@@ -28,8 +28,7 @@ public class Rtree {
     
     
     //nn query initials:
-    static Comparator<Entry> comparator = new MindistComparator();
-    static PriorityQueue<Entry> listH = new PriorityQueue<Entry>(10, comparator);
+    static PriorityQueue<Entry> listH = new PriorityQueue<Entry>(10, Comparator.comparingDouble(Entry::getDist));
     static ArrayList<Rtree.Point> NN = new ArrayList<Rtree.Point>();
     static double nnDist = 0;
     static HashMap<Integer,Double> result = new HashMap<Integer,Double>();
@@ -37,8 +36,6 @@ public class Rtree {
     static double finalDist;
     
     public static void main(String[] args) {
-        
-        
         
         System.out.println("0.4B = "+zeropoint4B);
         //A list containing all nodes
@@ -218,12 +215,7 @@ public class Rtree {
         //		System.out.println("Mindist is "+mindistance);
         long endTimeR   = System.nanoTime();
         long totalTimeR = endTimeR - startTimeR;
-        
-        
-        
-        
-        
-   
+
         long startTimeN1 = System.nanoTime();
         Rtree.Point q = new Rtree.Point((float) -30,(float) -1.5);
         Node treeroot=allNodes.get(getKeyFromValue(allNodesParentID,0));
@@ -1818,15 +1810,15 @@ public class Rtree {
     	
     	public Entry(Node node, Double mindist){
     		this.node = node;
-    		this.setMindist(mindist);
+    		this.setDist(mindist);
     	}
 
 
-		public void setMindist(Double mindist) {
+		public void setDist(Double mindist) {
 			this.mindist = mindist;
 		}
 
-		public Double getMindist() {
+		public Double getDist() {
 			return mindist;
 		}
     }
@@ -1849,7 +1841,7 @@ public class Rtree {
             
         }else{ //leaf node
             //Get the lowest value in listH
-            double nextHVal = listH.peek().getMindist();
+            double nextHVal = listH.peek().getDist();
             //System.out.println(lowestMindist);
             
             //Get the closest points in this leaf node
