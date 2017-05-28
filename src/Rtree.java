@@ -23,9 +23,7 @@ public class Rtree {
     
     //r query initials:
     static int sq_number_of_points=0;
-    
     static int number_of_points=0;
-    
     
     //nn query initials:
     static PriorityQueue<Entry> listH = new PriorityQueue<Entry>(10, Comparator.comparingDouble(Entry::getDist));
@@ -40,138 +38,42 @@ public class Rtree {
         System.out.println("0.4B = "+zeropoint4B);
         //A list containing all nodes
         
-        //assignment node id
-        //int nodeID=1;
-        
-        //build an R-tree
-        Point point1 = new Point(0,5,1);
-        Point point2 = new Point(5,2,2);
-        Point point3 = new Point(1,4,3);
-        Point point4 = new Point(6,1,4);
-        Point point5 = new Point(-1,3,5);
-        Point point6 = new Point(8,-1,6);
-        Point point7 = new Point(-5,-2,7);
-        Point point8 = new Point(-4,-1,8);
-        Point point9 = new Point(-4,-2,9);
-        
-        Point point10 = new Point(9,-2,10);
-        Point point11 = new Point(18,-6,11);
-        Point point12 = new Point(19,-5,12);
-        Point point13 = new Point(21,-10,13);
-        Point point14 = new Point(22,-16,14);
-        Point point15 = new Point(22,-15,15);
-        Point point16 = new Point(20,-17,16);
-        Point point17 = new Point(12,-17,17);
-        Point point18 = new Point(10,-15,18);
-        Point point19 = new Point(6,-5,19);
-        Point point20 = new Point(7,-7,20);
-        Point point21 = new Point(2,-8,21);
-        Point point22 = new Point(11,0,22);
-        Point point23 = new Point(-8,-4,23);
-        Point point24 = new Point(-7,1,24);
-        Point point25 = new Point(-6,-1,25);
-        
         //		Node node1= new Node();
         Node node1 = new Node(0, new ArrayList<Node>(),new ArrayList<Point>(),true,ID);
         allNodes.put(ID,node1);
         allNodesParentID.put(ID, 0);
         ID=ID+1;
         
-        
-        //		nodeNum=nodeNum+1;
-        Insertion(allNodes.get(getKeyFromValue(allNodesParentID,0)),point1);
-        //	System.out.println(node1.x1+" "+node1.y1+" "+node1.x2+" "+node1.y2+" size: "+node1.points.size());
-        
-        Insertion(allNodes.get(getKeyFromValue(allNodesParentID,0)),point2);
-        //	System.out.println(node1.x1+" "+node1.y1+" "+node1.x2+" "+node1.y2+" size: "+node1.points.size());
-        Insertion(allNodes.get(getKeyFromValue(allNodesParentID,0)),point3);
-        //	System.out.println(node1.x1+" "+node1.y1+" "+node1.x2+" "+node1.y2+" size: "+node1.points.size());
-        Insertion(allNodes.get(getKeyFromValue(allNodesParentID,0)),point4);
-        //	System.out.println(node1.x1+" "+node1.y1+" "+node1.x2+" "+node1.y2+" size: "+node1.points.size());
-        Insertion(allNodes.get(getKeyFromValue(allNodesParentID,0)),point5);
-        //	System.out.println(node1.x1+" "+node1.y1+" "+node1.x2+" "+node1.y2+" size: "+node1.points.size());;
-        Insertion(allNodes.get(getKeyFromValue(allNodesParentID,0)),point6);
-        //	System.out.println(node1.x1+" "+node1.y1+" "+node1.x2+" "+node1.y2+" size: "+node1.points.size());
-        
-        
-        //		System.out.println("Node 2's points (should be nothing)\n");
-        //		allNodes.get(2).getAllPointsId();
-        //		System.out.println("Node 2's nodes (should be 3,4)\n");
-        //		allNodes.get(2).getAllNodesId();
-        //		System.out.println("Node 3's points (should be 2,4,6)\n");
-        //		allNodes.get(3).getAllPointsId();
-        //		System.out.println("Node 4's points (should be 1,3,5)\n");
-        //		allNodes.get(4).getAllPointsId();
-        //
-        //test choose sub-tree
-        Insertion(allNodes.get(getKeyFromValue(allNodesParentID,0)),point7);
-        
-        //		System.out.println("Node 3's points (should be 2,4,6)\n");
-        //		allNodes.get(3).getAllPointsId();
-        //		System.out.println("Node 4's points (should be 1,3,5,7)\n");
-        //		allNodes.get(4).getAllPointsId();
-        //
-        Insertion(allNodes.get(getKeyFromValue(allNodesParentID,0)),point8);
-        
-        //		System.out.println("Node 3's points (should be 2,4,6)\n");
-        //		allNodes.get(3).getAllPointsId();
-        //		System.out.println("Node 4's points (should be 1,3,5,7,8)\n");
-        //		allNodes.get(4).getAllPointsId();
-        //
-        
-        Insertion(allNodes.get(getKeyFromValue(allNodesParentID,0)),point9);
-        
-        //		System.out.println("Node 5's points (should be 7,8,9)\n");
-        //		allNodes.get(5).getAllPointsId();
-        //		System.out.println("Node 6's points (should be 1,3,5)\n");
-        //		allNodes.get(6).getAllPointsId();
-        //
-        //test more points until the tree root node overflows
-        Insertion(allNodes.get(getKeyFromValue(allNodesParentID,0)),point10);
-        Insertion(allNodes.get(getKeyFromValue(allNodesParentID,0)),point11);
-        Insertion(allNodes.get(getKeyFromValue(allNodesParentID,0)),point12);
-        Insertion(allNodes.get(getKeyFromValue(allNodesParentID,0)),point13);
-        Insertion(allNodes.get(getKeyFromValue(allNodesParentID,0)),point14);
-        Insertion(allNodes.get(getKeyFromValue(allNodesParentID,0)),point15);
-        Insertion(allNodes.get(getKeyFromValue(allNodesParentID,0)),point16);
-        Insertion(allNodes.get(getKeyFromValue(allNodesParentID,0)),point17);
-        
+        //TESTING DRAFT
+        /*
         //there should be totally 6 nodes
         //CORRECT Allocation of points should be
         //2,4,6,10//7,8,9//1,3,5//11,12//13,14,15,16,17,18
         List<Integer> allnodesID = new ArrayList<Integer>(allNodes.keySet());
         System.out.println(Arrays.toString(allnodesID.toArray()));
-        //print all nodes' points
-        for(int i=0;i<allnodesID.size();i++){
-            if(allNodes.get(allnodesID.get(i)).points.isEmpty()){
-                System.out.println("node "+allnodesID.get(allnodesID.get(i))+"'s childnodes ");
-                allNodes.get(allnodesID.get(i)).getAllNodesId();
-            }else{
-                System.out.println("node "+allnodesID.get(i));
-                allNodes.get(allnodesID.get(i)).getAllPointsId();
-            }
-        }
         
-        //add a new point to create a THREE-LAYER R-Tree (result two overflows)
-        Insertion(allNodes.get(getKeyFromValue(allNodesParentID,0)),point18);
         //this time should have 9 nodes
         List<Integer> allnodesID_v2 = new ArrayList<Integer>(allNodes.keySet());
         System.out.println("\nAll existing Nodes now (should be 9):\n"+Arrays.toString(allnodesID_v2.toArray()));
         //show tree root id
         System.out.println("Now the Tree root id is:"+getKeyFromValue(allNodesParentID,0));
+        */
         
+        //Get data and build Rtree
+        ReadFile.readDataset();
         
-        Insertion(allNodes.get(getKeyFromValue(allNodesParentID,0)),point19);
-        Insertion(allNodes.get(getKeyFromValue(allNodesParentID,0)),point20);
-        Insertion(allNodes.get(getKeyFromValue(allNodesParentID,0)),point21);
-        Insertion(allNodes.get(getKeyFromValue(allNodesParentID,0)),point22);
-        Insertion(allNodes.get(getKeyFromValue(allNodesParentID,0)),point23);
-        Insertion(allNodes.get(getKeyFromValue(allNodesParentID,0)),point24);
-        Insertion(allNodes.get(getKeyFromValue(allNodesParentID,0)),point25);
-        
-        for(int i =26;i<=2000;i++){
-            Insertion(allNodes.get(getKeyFromValue(allNodesParentID,0)),new Point((float) Math.random()*1000,(float) Math.random()*1000,i));
+        for(int i = 0;i<ReadFile.numOfPts;i++){
+        	float pX = Float.parseFloat(ReadFile.xList1.get(i));
+        	float pY = Float.parseFloat(ReadFile.yList1.get(i));
+        	
+            Insertion(allNodes.get(getKeyFromValue(allNodesParentID,0)),new Point(pX,pY,i+1));
         }
+        
+        //Test with more points
+        /*
+        for(int i = 50;i<2000;i++){
+            Insertion(allNodes.get(getKeyFromValue(allNodesParentID,0)),new Point((float) Math.random()*1000, (float) Math.random()*1000, i+1));
+        }*/
         
         updateAllMBR();
         
@@ -200,40 +102,57 @@ public class Rtree {
         
         //perform range query
         //updateAllMBR();
+        ReadFile.ReadRangeQuery("RangeQueryTesting");
+        ArrayList<Float> rqX1 = ReadFile.rqX1;
+        ArrayList<Float> rqY1 = ReadFile.rqY1;
+        ArrayList<Float> rqX2 = ReadFile.rqX2;
+        ArrayList<Float> rqY2 = ReadFile.rqY2;
         
-        RQuery r1= new RQuery((float) 0,(float) 50,(float)50,(float)0);
+        long startTimeR = System.nanoTime();
+        for(int i=0; i<100; i++){
+        	number_of_points=0;
+        	
+        	RQuery r1= new RQuery(rqX1.get(i),rqY1.get(i),rqX2.get(i),rqY2.get(i));
+        	rangeQuery(allNodes.get(getKeyFromValue(allNodesParentID,0)),r1);
+        	System.out.println("There are "+number_of_points+" points found");
+        }
         
-        long startTimeR = System.nanoTime();;
-        
-        rangeQuery(allNodes.get(getKeyFromValue(allNodesParentID,0)),r1);
-        
-        System.out.println("There are "+number_of_points+" points found");
-        
-        //test mindist
-        //		System.out.println("\n**********test mindist***********\n");
-        //		float mindistance= mindist(new NNQuery(2,2), allNodes.get(6));
-        //		System.out.println("Mindist is "+mindistance);
         long endTimeR   = System.nanoTime();
         long totalTimeR = endTimeR - startTimeR;
 
+        //Perform NNSearch        
+        ReadFile.ReadNNSearchQuery("NNSearchTesting");
+        ArrayList<Float> nnqX = ReadFile.nnqX;
+        ArrayList<Float> nnqY = ReadFile.nnqY;
+ 
         long startTimeN1 = System.nanoTime();
-        Rtree.Point q = new Rtree.Point((float) -30,(float) -1.5);
-        Node treeroot=allNodes.get(getKeyFromValue(allNodesParentID,0));
         
-        getMindist(q,treeroot); //Access root
+        for(int i=0; i<100; i++){
+        	Rtree.Point q = new Rtree.Point(nnqX.get(i),nnqY.get(i));
+            Node treeroot=allNodes.get(getKeyFromValue(allNodesParentID,0));
+            getMindist(q,treeroot); //Access root
+            NNSearch(q);
+            
+            System.out.println("\n***********NN result: The id of point(s)***********\n");
+            for(int j=0;j<NN.size();j++){
+                
+                System.out.println(NN.get(j).id);
+                
+            }
+            
+            NN.clear();
+            nnDist = 0;
+            lowestDist = Double.POSITIVE_INFINITY;
+            result.clear();
+            listH.clear();
+        }
+        
         long endTimeN1   = System.nanoTime();
         long totalTimeN1 = endTimeN1 - startTimeN1;
         //Perform nn query
         long startTimeN = System.nanoTime();
-        NNSearch(q);
-        listH.clear();
-        System.out.println("\n***********NN result: The id of point(s)***********\n");
-        for(int j=0;j<NN.size();j++){
-            
-            System.out.println(NN.get(j).id);
-            
-        }
-        NN.clear();
+        
+        
         long endTimeN   = System.nanoTime();
         long totalTimeN = endTimeN - startTimeN+totalTimeN1;
         
@@ -264,43 +183,51 @@ public class Rtree {
         //		  }
         //		}
         
-        for (int i=0; i<allPoints.size();i++){
-            float thisPointX=allPoints.get(i).x;
-            float thisPointY=allPoints.get(i).y;
-            if(thisPointX>=r1.x1 && thisPointX<=r1.x2 && thisPointY>=r1.y2 && thisPointY<=r1.y1){
-                sq_number_of_points=sq_number_of_points+1;
+        for(int j=0; j<100; j++){
+        	sq_number_of_points=0;
+        	
+        	for (int i=0; i<allPoints.size();i++){
+                float thisPointX=allPoints.get(i).x;
+                float thisPointY=allPoints.get(i).y;
+                if(thisPointX>=rqX1.get(j) && thisPointX<=rqX2.get(j) && thisPointY>=rqY2.get(j) && thisPointY<=rqY1.get(j)){
+                    sq_number_of_points=sq_number_of_points+1;
+                }
             }
+        	
+        	System.out.println("\nSequential Scan Range Query There are "+sq_number_of_points+" points found");
         }
-        
         
         long endTimeSR   = System.nanoTime();
         long totalTimeSR = endTimeSR - startTimeSR;
-        System.out.println("\nSequential Scan Range Query There are "+sq_number_of_points+" points found");
         
         
         
         
         
+        //NN Search Sequential Scan
         long startTimeSN = System.nanoTime();
         
-        ArrayList<Point> S_NNresult=new ArrayList<Point>();
-        float smallestDistance=(float) Math.sqrt((Math.pow((allPoints.get(0).x-q.x),2)+Math.pow((allPoints.get(0).y-q.y),2)));
-        S_NNresult.add(allPoints.get(0));
-        for(int i=1;i<allPoints.size();i++){
-            float thisDistance=(float) Math.sqrt((Math.pow((allPoints.get(i).x-q.x),2)+Math.pow((allPoints.get(i).y-q.y),2)));
-            if(thisDistance==smallestDistance){
-                S_NNresult.add(allPoints.get(i));
+        for(int j=0; j<100; j++){
+        	
+        	ArrayList<Point> S_NNresult=new ArrayList<Point>();
+            float smallestDistance=(float) Math.sqrt((Math.pow((allPoints.get(0).x-nnqX.get(j)),2)+Math.pow((allPoints.get(0).y-nnqY.get(j)),2)));
+            S_NNresult.add(allPoints.get(0));
+            for(int i=1;i<allPoints.size();i++){
+                float thisDistance=(float) Math.sqrt((Math.pow((allPoints.get(i).x-nnqX.get(j)),2)+Math.pow((allPoints.get(i).y-nnqY.get(j)),2)));
+                if(thisDistance==smallestDistance){
+                    S_NNresult.add(allPoints.get(i));
+                }
+                else if(thisDistance<smallestDistance){
+                    S_NNresult.clear();
+                    smallestDistance=thisDistance;
+                    S_NNresult.add(allPoints.get(i));
+                }
             }
-            else if(thisDistance<smallestDistance){
-                S_NNresult.clear();
-                smallestDistance=thisDistance;
-                S_NNresult.add(allPoints.get(i));
+            
+            System.out.println("\nSequential Scan NN The nodes found are:");
+            for(int i=0;i<S_NNresult.size();i++){
+                System.out.println(S_NNresult.get(i).id);
             }
-        }
-        
-        System.out.println("\nSequential Scan NN The nodes found are:");
-        for(int i=0;i<S_NNresult.size();i++){
-            System.out.println(S_NNresult.get(i).id);
         }
         
         long endTimeSN   = System.nanoTime();
@@ -333,43 +260,6 @@ public class Rtree {
         }
         
     }
-    
-    //
-    
-    //used to calculate the mindist from a point to a node's MBR
-    //	public static float mindist(NNQuery q, Node r){
-    //		float distance=-1;
-    //		if(q.x>=r.x1 && q.x<=r.x2 && q.y>=r.y2 && q.y<=r.y1){
-    //			distance=0;
-    //		}
-    //		else if(q.x<r.x1 && q.y<r.y1 && q.y>r.y2){
-    //			distance=r.x1-q.x;
-    //		}
-    //		else if(q.x>r.x2 && q.y<r.y1 && q.y>r.y2){
-    //			distance=q.x-r.x2;
-    //		}
-    //		else if(q.x>r.x1 && q.x<r.x2 && q.y>r.y1){
-    //			distance=q.y-r.y1;
-    //		}
-    //		else if(q.x>r.x1 && q.x<r.x2 && q.y<r.y2){
-    //			distance=r.y2-q.y;
-    //		}
-    //		else if(q.x<r.x1 && q.y>r.y1){
-    //			distance=(float) Math.sqrt((Math.pow((r.x1-q.x),2)+Math.pow((q.y-r.y1),2)));
-    //		}
-    //		else if(q.x<r.x1 && q.y<r.y2){
-    //			distance=(float) Math.sqrt((Math.pow((r.x1-q.x),2)+Math.pow((r.y2-q.y),2)));
-    //		}
-    //		else if(q.x>r.x2 && q.y>r.y1){
-    //			distance=(float) Math.sqrt((Math.pow((q.x-r.x2),2)+Math.pow((q.y-r.y1),2)));
-    //		}
-    //		else if(q.x>r.x2 && q.y<r.y2){
-    //			distance=(float) Math.sqrt((Math.pow((q.x-r.x2),2)+Math.pow((r.y2-q.y),2)));
-    //		}
-    //		return distance;
-    //	}
-    //
-    
     
     //used to check if two rectangle intersects (range query and MBR)
     public static boolean isIntersect(Node MBR, RQuery r){
