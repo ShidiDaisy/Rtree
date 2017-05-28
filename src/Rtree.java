@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 
 public class Rtree {
     
+	//R-tree initials:
     private final static int B = 100;
     private final static int zeropoint4B=(int) Math.ceil(0.4*B);
     
@@ -59,6 +60,8 @@ public class Rtree {
         System.out.println("Now the Tree root id is:"+getKeyFromValue(allNodesParentID,0));
         */
         
+        //*******************BUILD RTREE*******************//
+        
         //Get data and build Rtree
         ReadFile.readDataset();
         
@@ -68,13 +71,7 @@ public class Rtree {
         	
             Insertion(allNodes.get(getKeyFromValue(allNodesParentID,0)),new Point(pX,pY,i+1));
         }
-        
-        //Test with more points
-        /*
-        for(int i = 50;i<2000;i++){
-            Insertion(allNodes.get(getKeyFromValue(allNodesParentID,0)),new Point((float) Math.random()*1000, (float) Math.random()*1000, i+1));
-        }*/
-        
+       
         updateAllMBR();
         
         System.out.println("\n************Summary**************\n");
@@ -101,8 +98,7 @@ public class Rtree {
         
         
         //perform range query
-        //updateAllMBR();
-        ReadFile.ReadRangeQuery("RangeQueryTesting");
+        ReadFile.ReadRangeQuery("RangeQueryTesting"); //<----------Change name of file
         ArrayList<Float> rqX1 = ReadFile.rqX1;
         ArrayList<Float> rqY1 = ReadFile.rqY1;
         ArrayList<Float> rqX2 = ReadFile.rqX2;
@@ -120,12 +116,16 @@ public class Rtree {
         long endTimeR   = System.nanoTime();
         long totalTimeR = endTimeR - startTimeR;
 
+        
+        
+        
+        
         //Perform NNSearch        
-        ReadFile.ReadNNSearchQuery("NNSearchTesting");
+        ReadFile.ReadNNSearchQuery("NNSearchTesting"); //<----------Read File
         ArrayList<Float> nnqX = ReadFile.nnqX;
         ArrayList<Float> nnqY = ReadFile.nnqY;
  
-        long startTimeN1 = System.nanoTime();
+        long startTimeN = System.nanoTime();
         
         for(int i=0; i<100; i++){
         	Rtree.Point q = new Rtree.Point(nnqX.get(i),nnqY.get(i));
@@ -146,18 +146,12 @@ public class Rtree {
             result.clear();
             listH.clear();
         }
-        
-        long endTimeN1   = System.nanoTime();
-        long totalTimeN1 = endTimeN1 - startTimeN1;
-        //Perform nn query
-        long startTimeN = System.nanoTime();
-        
-        
+   
         long endTimeN   = System.nanoTime();
-        long totalTimeN = endTimeN - startTimeN+totalTimeN1;
+        long totalTimeN = endTimeN - startTimeN;
         
         
-        
+        // Insert all points into a list to perform SEQUENTIAL SCAN
         for (Map.Entry<Integer, Node> eachNode : allNodes.entrySet())
         {
             if(allNodes.get(eachNode.getKey()).asLeaf==true){
@@ -169,20 +163,7 @@ public class Rtree {
         
         
         long startTimeSR = System.nanoTime();
-        
-        //		for (Map.Entry<Integer, Node> eachNode : allNodes.entrySet())
-        //		{
-        //		  if(allNodes.get(eachNode.getKey()).asLeaf==true){
-        //			  for (int i=0; i<allNodes.get(eachNode.getKey()).points.size();i++){
-        //				  float thisPointX=allNodes.get(eachNode.getKey()).points.get(i).x;
-        //				  float thisPointY=allNodes.get(eachNode.getKey()).points.get(i).y;
-        //				  if(thisPointX>=r1.x1 && thisPointX<=r1.x2 && thisPointY>=r1.y2 && thisPointY<=r1.y1){
-        //					  sq_number_of_points=sq_number_of_points+1;
-        //				  }
-        //			  }
-        //		  }
-        //		}
-        
+
         for(int j=0; j<100; j++){
         	sq_number_of_points=0;
         	
@@ -235,11 +216,30 @@ public class Rtree {
         
         
         
-        System.out.println("Sequential Scan Benchmark for Range Query (nano): "+totalTimeSR);
-        System.out.println("One Range Query time (nano): "+totalTimeR);
-        System.out.println("Sequential Scan Benchmark for One NN Query time (ms): "+totalTimeSN);
-        System.out.println("One NN Query time (ms): "+totalTimeN);
+        System.out.println("Sequential Scan Benchmark for 100 Range Queries (nano): "+totalTimeSR);
+        System.out.println("Sequential Scan Benchmark for 1 Range Queries (nano): "+totalTimeSR/100);
+        
+        System.out.println("100 Range Query time (nano): "+totalTimeR);
+        System.out.println("1 Range Query time (nano): "+totalTimeR/100);
+        
+        System.out.println("Sequential Scan Benchmark for 100 NN Query time (ms): "+totalTimeSN);
+        System.out.println("Sequential Scan Benchmark for 1 NN Query time (ms): "+totalTimeSN/100);
+        
+        System.out.println("100 NN Query time (ms): "+totalTimeN);
+        System.out.println("1 NN Query time (ms): "+totalTimeN/100);
     }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     //range query main function
     public static void rangeQuery(Node root, RQuery r){
         //System.out.println("\n***********Performing Range Query***********\n");
