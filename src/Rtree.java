@@ -215,17 +215,17 @@ public class Rtree {
         long totalTimeSN = endTimeSN - startTimeSN;
         
         
-        
+        System.out.println("\n****************************Result*****************************\n");
         System.out.println("Sequential Scan Benchmark for 100 Range Queries (nano): "+totalTimeSR);
         System.out.println("Sequential Scan Benchmark for 1 Range Queries (nano): "+totalTimeSR/100);
         
-        System.out.println("100 Range Query time (nano): "+totalTimeR);
+        System.out.println("\n100 Range Query time (nano): "+totalTimeR);
         System.out.println("1 Range Query time (nano): "+totalTimeR/100);
         
-        System.out.println("Sequential Scan Benchmark for 100 NN Query time (ms): "+totalTimeSN);
+        System.out.println("\nSequential Scan Benchmark for 100 NN Query time (ms): "+totalTimeSN);
         System.out.println("Sequential Scan Benchmark for 1 NN Query time (ms): "+totalTimeSN/100);
         
-        System.out.println("100 NN Query time (ms): "+totalTimeN);
+        System.out.println("\n100 NN Query time (ms): "+totalTimeN);
         System.out.println("1 NN Query time (ms): "+totalTimeN/100);
     }
     
