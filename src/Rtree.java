@@ -136,31 +136,47 @@ public class Rtree {
         ArrayList<Float> nnqX = ReadFile.nnqX;
         ArrayList<Float> nnqY = ReadFile.nnqY;
  
-        long startTimeN = System.nanoTime();
-        
-        for(int i=0; i<100; i++){
-        	Rtree.Point q = new Rtree.Point(nnqX.get(i),nnqY.get(i));
-            Node treeroot=allNodes.get(getKeyFromValue(allNodesParentID,0));
-            getMindist(q,treeroot); //Access root
-            NNSearch(q);
+    	long startTimeN = System.nanoTime();
+    	long endTimeN = 0;
+    	long totalTimeN = 0;
+    	
+        try{
+        	PrintWriter writer = new PrintWriter("NNSearchResult", "UTF-8");
+        	writer.println("***********NN result: The id of point(s)***********");
             
-            System.out.println("\n***********NN result: The id of point(s)***********\n");
-            for(int j=0;j<NN.size();j++){
+            for(int i=1; i<=100; i++){
+            	Rtree.Point q = new Rtree.Point(nnqX.get(i-1),nnqY.get(i-1));
+                Node treeroot=allNodes.get(getKeyFromValue(allNodesParentID,0));
+                getMindist(q,treeroot); //Access root
+                NNSearch(q);
                 
-                System.out.println(NN.get(j).id);
+                System.out.println("\n***********NN result: The id of point(s)***********\n");
+                writer.println("Query " + i + ": ");
+                for(int j=1;j<=NN.size();j++){
+                    
+                    System.out.println(NN.get(j-1).id);
+                    writer.println(NN.get(j-1).id + " ");
+                    
+                }
                 
+                writer.println("\n");
+                
+                NN.clear();
+                nnDist = 0;
+                lowestDist = Double.POSITIVE_INFINITY;
+                result.clear();
+                listH.clear();
             }
+            endTimeN   = System.nanoTime();
+            totalTimeN = endTimeN - startTimeN;
             
-            NN.clear();
-            nnDist = 0;
-            lowestDist = Double.POSITIVE_INFINITY;
-            result.clear();
-            listH.clear();
-        }
-   
-        long endTimeN   = System.nanoTime();
-        long totalTimeN = endTimeN - startTimeN;
-        
+            writer.println("\nTotal running time of answering all the 100 queries (ms): " + totalTimeN);
+		    writer.println("Average time of each query (ms): " + totalTimeN/100);
+            writer.close();
+        }catch (IOException e) {
+ 		   // do something
+ 		}
+
         
         // Insert all points into a list to perform SEQUENTIAL SCAN
         for (Map.Entry<Integer, Node> eachNode : allNodes.entrySet())
@@ -238,16 +254,16 @@ public class Rtree {
         System.out.println("\n100 NN Query time (ms): "+totalTimeN);
         System.out.println("1 NN Query time (ms): "+totalTimeN/100);
         
-        //Write Output File
+        //Write Range Query Result to file
         try{
 		    PrintWriter writer = new PrintWriter("RangeQueryResult", "UTF-8");
-		    writer.println("******Range Query Result******");
+		    writer.println("******Range Query Result******\n");
 		    for(int i=1; i<=rqResult.size(); i++){
 		    	writer.println("Query" + i + ": " + rqResult.get(i-1));
 		    }
 		    
-		    writer.println("Total running time of answering all the 100 queries: " + totalTimeR);
-		    writer.println("Average time of each query" + avgTimeR);
+		    writer.println("\nTotal running time of answering all the 100 queries (nano): " + totalTimeR);
+		    writer.println("Average time of each query (nano): " + avgTimeR);
 		    
 		    writer.close();
 		} catch (IOException e) {
