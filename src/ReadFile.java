@@ -23,11 +23,12 @@ public class ReadFile {
 	static ArrayList<Float> nnqX = new ArrayList<Float>();
 	static ArrayList<Float> nnqY = new ArrayList<Float>();
 	
+	/*
 	public static void main(String[] args) {
 		ReadNNSearchQuery("NNSearchTesting");
 		System.out.println(nnqX.get(1));
 		System.out.println(nnqY.get(1));
-	}
+	}*/
 
 	public static void readDataset(){
 		String FILENAME = "dataset";

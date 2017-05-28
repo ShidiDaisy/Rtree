@@ -1,5 +1,6 @@
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -97,7 +98,14 @@ public class Rtree {
         //******************************************************************//
         //******************************************************************//
         
-        
+        //Write Output
+        try{
+		    PrintWriter writer = new PrintWriter("RangeQueryResult", "UTF-8");
+		    writer.println("************Range Query Result************");
+		    writer.close();
+		} catch (IOException e) {
+		   // do something
+		}
         
         
         //perform range query
@@ -107,6 +115,7 @@ public class Rtree {
         ArrayList<Float> rqY1 = ReadFile.rqY1;
         ArrayList<Float> rqX2 = ReadFile.rqX2;
         ArrayList<Float> rqY2 = ReadFile.rqY2;
+        ArrayList<Integer> rqResult = new ArrayList<Integer>();
         
         long startTimeR = System.nanoTime();
         for(int i=0; i<100; i++){
@@ -115,10 +124,12 @@ public class Rtree {
         	RQuery r1= new RQuery(rqX1.get(i),rqY1.get(i),rqX2.get(i),rqY2.get(i));
         	rangeQuery(allNodes.get(getKeyFromValue(allNodesParentID,0)),r1);
         	System.out.println("There are "+number_of_points+" points found");
+        	rqResult.add(number_of_points);
         }
         
         long endTimeR   = System.nanoTime();
         long totalTimeR = endTimeR - startTimeR;
+        long avgTimeR = totalTimeR/100;
 
         //Perform NNSearch        
         ReadFile.ReadNNSearchQuery("NNSearchTesting");
@@ -239,6 +250,23 @@ public class Rtree {
         System.out.println("One Range Query time (nano): "+totalTimeR);
         System.out.println("Sequential Scan Benchmark for One NN Query time (ms): "+totalTimeSN);
         System.out.println("One NN Query time (ms): "+totalTimeN);
+        
+        //Write Output File
+        try{
+		    PrintWriter writer = new PrintWriter("RangeQueryResult", "UTF-8");
+		    writer.println("******Range Query Result******");
+		    for(int i=1; i<=rqResult.size(); i++){
+		    	writer.println("Query" + i + ": " + rqResult.get(i-1));
+		    }
+		    
+		    writer.println("Total running time of answering all the 100 queries: " + totalTimeR);
+		    writer.println("Average time of each query" + avgTimeR);
+		    
+		    writer.close();
+		} catch (IOException e) {
+		   // do something
+		}
+ 
     }
     //range query main function
     public static void rangeQuery(Node root, RQuery r){
