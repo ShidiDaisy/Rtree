@@ -39,8 +39,7 @@ public class Rtree {
         
         System.out.println("0.4B = "+zeropoint4B);
         //A list containing all nodes
-        
-        //		Node node1= new Node();
+
         Node node1 = new Node(0, new ArrayList<Node>(),new ArrayList<Point>(),true,ID);
         allNodes.put(ID,node1);
         allNodesParentID.put(ID, 0);
@@ -90,11 +89,14 @@ public class Rtree {
                 allNodes.get(key).getAllPointsId();
             }
         }
+        //*******************BUILD RTREE FINIFHED*******************//
+        //**********************************************************//
         
-        //******************************************************************//
-        //******************************************************************//
-        //******************************************************************//
         
+        
+        
+        
+        //*******************PERFORM RANGE QUERY*******************//
         //Write Output
         try{
 		    PrintWriter writer = new PrintWriter("RangeQueryResult", "UTF-8");
@@ -127,10 +129,10 @@ public class Rtree {
         long totalTimeR = endTimeR - startTimeR;
         long avgTimeR = totalTimeR/100;
 
+        //*******************PERFORM RANGE QUERY FINISHED*******************//
         
         
-        
-        
+        //*******************PERFORM NN QUERY*******************//
         //Perform NNSearch        
         ReadFile.ReadNNSearchQuery("NNSearchTesting"); //<----------Read File
         ArrayList<Float> nnqX = ReadFile.nnqX;
@@ -159,7 +161,7 @@ public class Rtree {
                     
                 }
                 
-                writer.println("\n");
+               // writer.println("\n");
                 
                 NN.clear();
                 nnDist = 0;
@@ -176,7 +178,14 @@ public class Rtree {
         }catch (IOException e) {
  		   // do something
  		}
-
+        //*******************PERFORM NN QUERY FINISHED*******************//
+        
+        
+        
+        
+        
+        //*******************PERFORM SEQUENTIAL SCAN*******************//
+        
         
         // Insert all points into a list to perform SEQUENTIAL SCAN
         for (Map.Entry<Integer, Node> eachNode : allNodes.entrySet())
@@ -188,7 +197,7 @@ public class Rtree {
             }
         }
         
-        
+        //*************Sequential Scan of Range Query*************//
         long startTimeSR = System.nanoTime();
 
         for(int j=0; j<100; j++){
@@ -212,7 +221,7 @@ public class Rtree {
         
         
         
-        //NN Search Sequential Scan
+        //*************Sequential Scan of NN Query*************//
         long startTimeSN = System.nanoTime();
         
         for(int j=0; j<100; j++){
@@ -240,7 +249,11 @@ public class Rtree {
         
         long endTimeSN   = System.nanoTime();
         long totalTimeSN = endTimeSN - startTimeSN;
-
+        
+        
+        
+        //************************Print Results in Console************************//
+        
         System.out.println("\n****************************Result*****************************\n");
         System.out.println("Sequential Scan Benchmark for 100 Range Queries (nano): "+totalTimeSR);
         System.out.println("Sequential Scan Benchmark for 1 Range Queries (nano): "+totalTimeSR/100);
@@ -272,7 +285,7 @@ public class Rtree {
     }
     
     
-    
+ //***********************************END OF MAIN*******************************//   
     
     
     
